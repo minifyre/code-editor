@@ -20,16 +20,16 @@ output.renderCodeFromEl=function(el)//el=textarea
 	//tmp resize canvas to fit text area size
 	{height,width}=el.getBoundingClientRect()
 	Object.assign(can,{height,width})
-	//end tmp
 	styles.colors=config.themes.pane
-	output.renderCode(ctx,value,{lang,styles,viewbox})
+	//end tmp
+	output.renderCode(ctx,value,{lang,styles,viewbox,textarea:el})
 }
 output.renderCode=function(ctx,txt,opts={})
 {
 	const
-	{lang,styles,viewbox}=opts,
+	{lang,styles,viewbox,textarea}=opts,
 	{width,height}=viewbox,
-	lineNums=true,
+	lineNums=true,//@todo decouples horizontal text positioning by a few px...
 	{colors,fontSize,lineHeight}=styles,
 	font=fontSize+'px "Source Code Pro", monospace',
 	adj=Math.ceil(lineHeight/10)//@todo figure out how to make this work with scaling...
@@ -69,9 +69,21 @@ output.renderCode=function(ctx,txt,opts={})
 		{
 			pos.x=0
 			pos.y+=1
+			// if (lineNums)
+			// {
+			// 	queueTxt(logic.int2lineNum(pos.y+1),{fillStyle:'#999'},{lineHeight,pos})
+			// 	pos.x=Math.ceil(pos.x)
+			// }
 		}
 	}
 
+	// if (lineNums)
+	// {
+	// 	queueTxt(logic.int2lineNum(1),{fillStyle:'#999'},{lineHeight,pos})
+	// 	//line number padding
+	// 	textarea.style.paddingLeft=Math.ceil(ctx.measureText('   1 ').width)+'px'
+	// }
+	
 
 	logic.tokenize(txt,lang)
 	.forEach(token=>token2queue(token,{colors,lineHeight,pos,tab}))
