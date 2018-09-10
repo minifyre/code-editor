@@ -1,12 +1,5 @@
 import {config,logic} from './code.logic.mjs'
-const output=function()
-{
-	const
-	className='editor',
-	el=document.createElement('div'),
-	html='<canvas></canvas><textarea lang=html spellcheck=false></textarea>'
-	return Object.assign(el,{className,innerHTML:html})
-}
+const output={}
 output.elStyles2floats=function(el,...props)
 {
 	const styles=getComputedStyle(el)
@@ -19,37 +12,24 @@ output.elStyles2floats=function(el,...props)
 output.renderCodeFromEl=function(el)//el=textarea
 {
 	const
-    {lang,value}=el,
-    can=el.parentElement.querySelector('canvas'),
+	{lang,value}=el,
+	can=el.parentElement.querySelector('canvas'),
 	ctx=can.getContext('2d'),
 	viewbox=output.viewbox(el),
 	styles=output.elStyles2floats(el,'fontSize','lineHeight','tabSize'),
 	//tmp resize canvas to fit text area size
 	{height,width}=el.getBoundingClientRect()
-	console.log(viewbox)
 	Object.assign(can,{height,width})
 	//end tmp
 	styles.colors=config.themes.pane
-	output.renderCode(ctx,value,lang,{styles,viewbox})
+	output.renderCode(ctx,value,{lang,styles,viewbox})
 }
-output.renderCode=function(ctx,txt,lang,opts={})
+output.renderCode=function(ctx,txt,opts={})
 {
 	const
-	{styles,viewbox}=opts,
-	{x,y,width,height}=viewbox,
-	tokens=logic.tokenize(txt,lang),
-	//@todo what is this?
-	rows=tokens.slice(0,5).reduce(logic.addChars,[[]])
-	//console.log(rows)
-
-	output.renderCodeBeta(ctx,txt,opts)
-}
-output.renderTxt=(ctx,txt,x,y,opts)=>Object.assign(ctx,opts).fillText(txt,x,y)
-output.renderCodeBeta=function(ctx,txt,opts={})
-{
-	const
-	{styles,viewbox}=opts,
+	{lang,styles,viewbox}=opts,
 	{width,height}=viewbox,
+	lineNums=true,
 	{colors,fontSize,lineHeight}=styles,
 	font=fontSize+'px "Source Code Pro", monospace',
 	adj=Math.ceil(lineHeight/10)//@todo figure out how to make this work with scaling...
@@ -92,7 +72,8 @@ output.renderCodeBeta=function(ctx,txt,opts={})
 		}
 	}
 
-	logic.tokenize(txt,'html')
+
+	logic.tokenize(txt,lang)
 	.forEach(token=>token2queue(token,{colors,lineHeight,pos,tab}))
 
 	ctx.save()
@@ -101,11 +82,6 @@ output.renderCodeBeta=function(ctx,txt,opts={})
 	queue.forEach(({txt,x,y,opts})=>output.renderTxt(ctx,txt,x,y,opts))
 	ctx.restore()
 }
-output.viewbox=function(el)
-{
-	const
-	{height,width}=el.getBoundingClientRect(),
-	{scrollLeft:x,scrollTop:y}=el
-	return {height,width,x,y}
-}
+output.renderTxt=(ctx,txt,x,y,opts)=>Object.assign(ctx,opts).fillText(txt,x,y)
+output.viewbox=({scrollHeight:h,scrollLeft:x,scrollTop:y,scrollWidth:w})=>({height:h,width:w,x,y})
 export {config,logic,output}
