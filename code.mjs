@@ -1,60 +1,27 @@
 import {config,input,logic,output} from './code.input.mjs'
-export default function code()
+export default async function code(url='/node_modules/code-editor/')
 {
-	return Reflect.construct(HTMLElement,[],code)
+	const
+	importFile=path=>fetch(path).then(x=>x.text()),
+	files=['css','html'].map(ext=>url+'code.'+ext),
+	[css,html]=await Promise.all(files.map(importFile))
+	config.dom=`<style>${css}</style>${html}`
+	customElements.define('code-editor',code.editor)
+}
+code.editor=function()
+{
+	return Reflect.construct(HTMLElement,[],code.editor)
 }
 Object.assign(code,{config,input,logic,output})
-const proto=code.prototype=Object.create(HTMLElement.prototype)
+const proto=code.editor.prototype=Object.create(HTMLElement.prototype)
 proto.connectedCallback=function()
 {
 	const
-	innerHTML=`<style>
-	main
-	{
-		display:flex;
-		height:100%;
-		position:relative;
-		overflow:hidden;
-	}
-	canvas,
-	textarea
-	{
-		border:0;
-		height:100%;
-		position:absolute;
-		margin:0;
-		padding:0;
-		width:100%;
-	}
-	/*@todo add text highlight color*/
-	textarea
-	{
-		background:transparent;
-		color:#fff;/*cursor color*/
-		font-family:'Source Code Pro', monospace;
-		font-size:1.2rem;
-		line-height:120%;
-		opacity:0.5;
-		overflow:scroll;
-		resize:none;
-		tab-size:4;
-		-webkit-text-fill-color:transparent;/*does not affect cursor color*/
-		white-space:pre;
-	}
-	textarea:focus
-	{
-		outline:none;
-	}
-	</style>
-	<main>
-		<canvas></canvas>
-		<textarea lang=html spellcheck=false></textarea>
-	</main>`,
+	{dom:innerHTML}=config,
 	shadow=Object.assign(this.attachShadow({mode:'open'}),{innerHTML}),
 	textarea=shadow.querySelector('textarea')
 	textarea.addEventListener('input',input.input)
-	textarea.addEventListener('keydown',input.keydown)//@todo isnt this bound to the window?
+	textarea.addEventListener('keydown',input.keydown)
 	textarea.addEventListener('scroll',input.scroll)
 	output.renderCodeFromEl(textarea)
 }//disconnectedCallback,attributeChangedCallback
-customElements.define('code-editor',code)

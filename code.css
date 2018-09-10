@@ -1,0 +1,36 @@
+main
+{
+	display:flex;
+	height:100%;
+	position:relative;
+	overflow:hidden;
+}
+canvas,
+textarea
+{
+	border:0;
+	height:100%;
+	position:absolute;
+	margin:0;
+	padding:0;
+	width:100%;
+}
+/*@todo add text highlight color*/
+textarea
+{
+	background:transparent;
+	color:#fff;/*cursor color*/
+	font-family:'Source Code Pro', monospace;
+	font-size:1.2rem;
+	line-height:120%;
+	opacity:0.5;
+	overflow:scroll;
+	resize:none;
+	tab-size:4;
+	-webkit-text-fill-color:transparent;/*does not affect cursor color*/
+	white-space:pre;
+}
+textarea:focus
+{
+	outline:none;
+}
