@@ -23,5 +23,32 @@ proto.connectedCallback=function()
 	textarea.addEventListener('input',input.input)
 	textarea.addEventListener('keydown',input.keydown)
 	textarea.addEventListener('scroll',input.scroll)
+	textarea.innerHTML=`<!Doctype html>
+<link rel=stylesheet href=index.css>
+<style>
+/*comment*/
+main
+{
+	display:flex;
+	flex:1 1 auto;
+	position:relative;
+	overflow:hidden;
+	width:100%;
+}
+</style>
+<!--body-->
+<main></main>
+<footer>&amp;copy;</footer>
+<script type=module src=index.js></script>`
 	output.renderCodeFromEl(textarea)
+
+	const langSelector=shadow.querySelector('.langs')
+	langSelector.innerHTML=Object.keys(logic.tokenize.config.languages)
+	.sort().map(opt=>`<option ${opt===textarea.lang?' selected':''}>${opt}</option>`).join('')
+
+	langSelector.addEventListener('change',function({target})
+	{
+		textarea.lang=target.value
+		output.renderCodeFromEl(textarea)
+	})
 }//disconnectedCallback,attributeChangedCallback

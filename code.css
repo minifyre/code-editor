@@ -4,12 +4,27 @@
 	display:flex;
 	flex-direction:column;
 }
+.cursor-info
+{
+	height:100%;
+	flex:1 1 auto;
+}
 main
 {
 	display:flex;
-	height:100%;
+	flex:1 1 auto;
 	position:relative;
 	overflow:hidden;
+	width:100%;
+}
+footer
+{
+	background:#000;
+	display:flex;
+	flex:0 0 auto;
+	flex-direction:row;
+	min-height:1.2rem;
+	width:100%;
 }
 canvas,
 textarea
