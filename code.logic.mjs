@@ -5,7 +5,7 @@ logic.currentLine=el=>logic.prevLines(el).slice(-1)[0]
 logic.cursor=function(el)
 {
 	const
-	length=el.selectionStart-el.selectionEnd,
+	length=el.selectionEnd-el.selectionStart,
 	row=logic.prevLines(el).length,
 	tabs=logic.tabReplacement(el),
 	col=logic.currentLine(el).replace(/\t/g,tabs).length+1
