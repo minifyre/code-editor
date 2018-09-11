@@ -12,6 +12,7 @@ logic.cursor=function(el)
 	return [col,row,length].filter(x=>!!x).join(',')
 }
 logic.findReplace=(txt,[find,swap])=>txt.replace(new RegExp(find,'g'),swap)
+logic.indentation=ln=>(ln.match(/^\s*/g)||[''])[0]
 logic.int2lineNum=function(int,lpad=4)
 {
 	const txt=int.toString()
