@@ -11,7 +11,7 @@ output.elStyles2floats=function(el,...props)
 }
 output.view=function(editor,el)
 {
-	editor.shadowRoot.querySelector('.cursor-info').innerHTML=logic.getCursorInfo(el)
+	editor.shadowRoot.querySelector('.cursor-info').innerHTML=logic.cursor(el)
 }
 output.renderCodeFromEl=function(editor,el)//el=textarea
 {
