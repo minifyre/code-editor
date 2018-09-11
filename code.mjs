@@ -19,10 +19,12 @@ proto.connectedCallback=function()
 	const
 	{dom:innerHTML}=config,
 	shadow=Object.assign(this.attachShadow({mode:'open'}),{innerHTML}),
-	textarea=shadow.querySelector('textarea')
-	textarea.addEventListener('input',input.input)
-	textarea.addEventListener('keydown',input.keydown)
-	textarea.addEventListener('scroll',input.scroll)
+    textarea=shadow.querySelector('textarea')
+    //+evt listeners
+	'input,keydown,pointerdown,pointermove,pointerout,pointerup,scroll'
+	.split(',')
+	.forEach(fn=>textarea.addEventListener(fn,evt=>input[fn](this,evt)))
+	//tmp testing code
 	textarea.innerHTML=`<!Doctype html>
 <link rel=stylesheet href=index.css>
 <style>
@@ -40,7 +42,7 @@ main
 <main></main>
 <footer>&amp;copy;</footer>
 <script type=module src=index.js></script>`
-	output.renderCodeFromEl(textarea)
+	output.renderCodeFromEl(this,textarea)
 
 	const langSelector=shadow.querySelector('.langs')
 	langSelector.innerHTML=Object.keys(logic.tokenize.config.languages)
