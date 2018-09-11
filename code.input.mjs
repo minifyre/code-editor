@@ -1,16 +1,26 @@
 import {config,logic,output} from './code.output.mjs'
 const input={}
+input.alt=(e,x='')=>e.preventDefault(document.execCommand('insertHTML',false,x))
 input.input=(editor,{target})=>output.renderCodeFromEl(editor,target)
 input.keydown=function(editor,evt)
 {
-	//handle tabs
-    if (evt.keyCode===9)
-    {
-        evt.preventDefault()
-        document.execCommand('insertHTML',false,'\t')
-    }
-    //@todo if enter, get # of tabs from prev line & add them after new space
-    output.view(editor,evt.path[0])
+	const
+	[target]=evt.path,
+	key=evt.key.toLowerCase(),
+	fns=
+	{
+		tab:evt=>input.alt(evt,'\t'),
+		enter:function(evt)
+		{
+			const
+			line=logic.currentLine(target),
+			indentation=logic.indentation(line)
+			input.alt(evt,'\n'+indentation)//@todo unhardcode newline char
+		}
+	},
+	fn=fns[key]
+	if (fn) fn(evt)
+	output.view(editor,target)
 }
 input.pointerdown=input.pointermove=input.pointerout=
 input.pointerup=(editor,{target})=>output.view(editor,target)
