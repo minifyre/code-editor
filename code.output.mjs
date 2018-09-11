@@ -9,7 +9,11 @@ output.elStyles2floats=function(el,...props)
 		return obj
 	},{})
 }
-output.renderCodeFromEl=function(el)//el=textarea
+output.view=function(editor,el)
+{
+	editor.shadowRoot.querySelector('.cursor-info').innerHTML=logic.getCursorInfo(el)
+}
+output.renderCodeFromEl=function(editor,el)//el=textarea
 {
 	const
 	{lang,value}=el,
@@ -22,6 +26,7 @@ output.renderCodeFromEl=function(el)//el=textarea
 	Object.assign(can,{height,width})
 	styles.colors=config.themes.pane
 	//end tmp
+	output.view(editor,el)
 	output.renderCode(ctx,value,{lang,styles,viewbox,textarea:el})
 }
 output.renderCode=function(ctx,txt,opts={})
