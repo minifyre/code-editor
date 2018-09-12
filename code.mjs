@@ -1,4 +1,5 @@
 import {config,input,logic,output} from './code.input.mjs'
+import util from './code.util.mjs'
 export default async function code(url='/node_modules/code-editor/')
 {
 	const
@@ -7,6 +8,9 @@ export default async function code(url='/node_modules/code-editor/')
 	[css,html]=await Promise.all(files.map(importFile))
 	config.dom=`<style>${css}</style>${html}`
 	customElements.define('code-editor',code.editor)
+	const {data,err}=await util.loadScript(url+'../prism/prism.js')
+	if (err) return console.error(err)
+	config.Prism=Prism
 }
 code.editor=function()
 {
@@ -19,8 +23,8 @@ proto.connectedCallback=function()
 	const
 	{dom:innerHTML}=config,
 	shadow=Object.assign(this.attachShadow({mode:'open'}),{innerHTML}),
-    textarea=shadow.querySelector('textarea')
-    //+evt listeners
+	textarea=shadow.querySelector('textarea')
+	//+evt listeners
 	'input,keydown,pointerdown,pointermove,pointerout,pointerup,scroll'
 	.split(',')
 	.forEach(fn=>textarea.addEventListener(fn,evt=>input[fn](this,evt)))
