@@ -2,15 +2,15 @@ import {config,input,logic,output} from './code.input.mjs'
 import util from './code.util.mjs'
 export default async function code(url='/node_modules/code-editor/')
 {
+	const {err}=await util.loadScript(url+'../prism/prism.js')
+	if (err) return console.error(err)
+	config.Prism=Prism
 	const
 	importFile=path=>fetch(path).then(x=>x.text()),
 	files=['css','html'].map(ext=>url+'code.'+ext),
 	[css,html]=await Promise.all(files.map(importFile))
 	config.dom=`<style>${css}</style>${html}`
 	customElements.define('code-editor',code.editor)
-	const {data,err}=await util.loadScript(url+'../prism/prism.js')
-	if (err) return console.error(err)
-	config.Prism=Prism
 }
 code.editor=function()
 {
