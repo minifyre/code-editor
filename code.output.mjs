@@ -48,21 +48,26 @@ output.renderCode=function(ctx,txt,opts={})
 	pos={x:0,y:0},
 	tab=Array(styles.tabSize).fill(' ').join('')
 
+
 	const
 	queue=[],
+	txtWidth=function(txt)
+	{
+		return ctx.measureText(txt.replace(/\t/g,tab)).width
+	},
 	queueTxt=function(txt,opts,config)
 	{
 		const
 		x=pos.x,
 		y=config.pos.y*config.lineHeight
 		queue.push({txt,x,y,opts})
-		config.pos.x+=ctx.measureText(txt).width
+		config.pos.x+=txtWidth(txt)
 	},
 	token2queue=function(token,opts)
 	{
 		const
 		{colors,lineHeight,pos}=opts,
-		fillStyle=logic.token2color(token,colors)||'#fff',
+		fillStyle=logic.tokenType2color(token.type,colors)||'#fff',
 		{children,type,start,stop}=token
 		//start
 		queueTxt(type.match(/tab/)?opts.tab:start,{fillStyle},{lineHeight,pos})
@@ -80,6 +85,47 @@ output.renderCode=function(ctx,txt,opts={})
 			// 	pos.x=Math.ceil(pos.x)
 			// }
 		}
+	},
+	token2queue2=function(token,opts)
+	{
+		const
+		{colors,lineHeight,pos}=opts,
+		{content,type}=token,
+		key=Object.keys(colors).reduce(function(old,key)
+		{
+			const match=type.match(key)
+			return match&&key.length>old.length?key:old
+		},'')||'text',
+		fillStyle=colors[key]||'#fff'
+		queueTxt(content,{fillStyle},{lineHeight,pos})
+		//@todo readd tabs queueTxt(type.match(/tab/)?opts.tab:start,{fillStyle},{lineHeight,pos})
+		if (token.type.match(/newline/))
+		{
+			pos.x=0
+			pos.y+=1
+			// if (lineNums)
+			// {
+			// 	queueTxt(logic.int2lineNum(pos.y+1),{fillStyle:'#999'},{lineHeight,pos})
+			// 	pos.x=Math.ceil(pos.x)
+			// }
+		}
+	},
+	str2token=function(content)
+	{
+		const
+		{length}=content,
+		type=	content.match(config.newline)?'newline':
+				content.match(/\t/)?'tab':
+				'text'
+		return {content,length,type}
+	},
+	flattenTokens=function(token,parentTypes=[])
+	{
+		if (typeof token==='string') token=str2token(token)
+		parentTypes=parentTypes.concat([token.type])
+		token.type=parentTypes.filter(x=>x.length).filter((x,i,arr)=>arr.indexOf(x)===i).join('.')
+		if (!Array.isArray(token.content)) return [token]
+		return [...token.content.reduce((arr,x)=>arr.concat(flattenTokens(x,parentTypes)),[])]		
 	}
 
 	// if (lineNums)
@@ -88,10 +134,24 @@ output.renderCode=function(ctx,txt,opts={})
 	// 	//line number padding
 	// 	textarea.style.paddingLeft=Math.ceil(ctx.measureText('   1 ').width)+'px'
 	// }
-	
+	config.Prism.tokenize(txt,config.Prism.languages.markup)
+	.reduce((arr,token)=>arr.concat(flattenTokens(token,['html'])),[])
+	.reduce(function(arr,token)//split newline chars
+	{
+		if (token.type.match('newline')&&token.length>1)
+		{
+			const types=token.type.split('.')
+			types.pop()
+			return arr.concat
+			(
+				token.content.split('')
+				.map(str2token).map(x=>Object.assign(x,{type:types+'.'+x.type}))
+			)
+		}
+		return arr.concat([token])
+	},[])
+	.forEach(token=>token2queue2(token,{colors,lineHeight,pos,tab}))
 
-	logic.tokenize(txt,lang)
-	.forEach(token=>token2queue(token,{colors,lineHeight,pos,tab}))
 
 	ctx.save()
 	//@todo if txt y (or x) is not within the bounds, don't draw it (need to integrate further down)

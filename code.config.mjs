@@ -7,12 +7,16 @@ config.themes.pane=
 {
 	//html
 	//@todo make parent tokens overwrite default text color (e.g. comment text should be green)
-	text:'#fff',
-	attribute:'#90c',
+    'html.doctype':'#999',
+    'html.tag':'#09c',
+    'html.tag.attr-name':'#90c',
+    'html.tag.attr-value':'#0cf',
+    'html.attr-value.punctuation':'#999',
 	comment:'#0c0',
-	tag:'#09c',
-	operator:'#999',
-	value:'#0cf',
-	entity:'#999'//@todo why is this not working
+    'html.entity':'#999',    
+    text:'#fff',
+
+    'html.style':'red',
+    'html.style.comment':'#0c0'
 }
 export default config

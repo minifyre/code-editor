@@ -20,6 +20,5 @@ logic.int2lineNum=function(int,lpad=4)
 }
 logic.prevLines=({selectionStart:i,value})=>value.slice(0,i).split(config.newline)
 logic.tabReplacement=el=>Array(parseInt(getComputedStyle(el).tabSize)).fill(' ').join('')
-logic.token2color=({type},colors)=>colors[type.split(' ').find(x=>colors[x])]
 logic.tokenize=tokenize
 export {config,logic}
