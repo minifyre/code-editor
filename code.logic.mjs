@@ -1,5 +1,4 @@
 import config from './code.config.mjs'
-import tokenize from './node_modules/tokenize/tokenize.mjs'
 const logic={}
 logic.currentLine=el=>logic.prevLines(el).slice(-1)[0]
 logic.cursor=function(el)
@@ -20,5 +19,4 @@ logic.int2lineNum=function(int,lpad=4)
 }
 logic.prevLines=({selectionStart:i,value})=>value.slice(0,i).split(config.newline)
 logic.tabReplacement=el=>Array(parseInt(getComputedStyle(el).tabSize)).fill(' ').join('')
-logic.tokenize=tokenize
 export {config,logic}
