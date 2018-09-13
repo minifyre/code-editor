@@ -17,6 +17,9 @@ config.themes.pane=
     text:'#fff',
 
     'html.style':'red',
-    'html.style.comment':'#0c0'
+    'html.style.comment':'#0c0',
+
+    'html.script':'#fc0',
+    'html.script.comment':'#0c0'
 }
 export default config
