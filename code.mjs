@@ -21,10 +21,14 @@ const proto=code.editor.prototype=Object.create(HTMLElement.prototype)
 proto.connectedCallback=function()
 {
 	const
+	editor=this,
 	{dom:innerHTML}=config,
 	shadow=Object.assign(this.attachShadow({mode:'open'}),{innerHTML}),
 	textarea=shadow.querySelector('textarea')
 	//+evt listeners
+	//pointer down should pointerMove,out,or up evt listeners & then remove them
+	// when done 
+	//only recalc cursor info if pointer is held down & moving, thus selecting more or less text
 	'input,keydown,pointerdown,pointermove,pointerout,pointerup,scroll'
 	.split(',')
 	.forEach(fn=>textarea.addEventListener(fn,evt=>input[fn](this,evt)))
@@ -46,15 +50,17 @@ main
 <main></main>
 <footer>&amp;copy;</footer>
 <script type=module src=index.js></script>`
-	output.renderCodeFromEl(this,textarea)
+	output.renderCodeFromEl(editor,textarea)
 
-	const langSelector=shadow.querySelector('.langs')
-	langSelector.innerHTML=Object.keys(logic.tokenize.config.languages)
+    const langSelector=shadow.querySelector('.langs')
+    
+	langSelector.innerHTML=Object.entries(config.Prism.languages)
+	.filter(([key,val])=>typeof val!=='function')
+	.map(([key])=>key)
 	.sort().map(opt=>`<option ${opt===textarea.lang?' selected':''}>${opt}</option>`).join('')
-
 	langSelector.addEventListener('change',function({target})
 	{
 		textarea.lang=target.value
-		output.renderCodeFromEl(textarea)
+		output.renderCodeFromEl(editor,textarea)
 	})
 }//disconnectedCallback,attributeChangedCallback

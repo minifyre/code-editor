@@ -19,7 +19,7 @@ output.renderCodeFromEl=function(editor,el)//el=textarea
 	{lang,value}=el,
 	can=el.parentElement.querySelector('canvas'),
 	ctx=can.getContext('2d'),
-	viewbox=output.viewbox(el),
+	viewbox=output.viewbox(editor,el),
 	styles=output.elStyles2floats(el,'fontSize','lineHeight','tabSize'),
 	//tmp resize canvas to fit text area size
 	{height,width}=el.getBoundingClientRect()
@@ -134,7 +134,7 @@ output.renderCode=function(ctx,txt,opts={})
 	// 	//line number padding
 	// 	textarea.style.paddingLeft=Math.ceil(ctx.measureText('   1 ').width)+'px'
 	// }
-	config.Prism.tokenize(txt,config.Prism.languages.markup)
+	config.Prism.tokenize(txt,config.Prism.languages[lang])
 	.reduce((arr,token)=>arr.concat(flattenTokens(token,['html'])),[])
 	.reduce(function(arr,token)//split newline chars
 	{
@@ -151,8 +151,6 @@ output.renderCode=function(ctx,txt,opts={})
 		return arr.concat([token])
 	},[])
 	.forEach(token=>token2queue2(token,{colors,lineHeight,pos,tab}))
-
-
 	ctx.save()
 	//@todo if txt y (or x) is not within the bounds, don't draw it (need to integrate further down)
 	ctx.translate(-viewbox.x,adj-viewbox.y)
