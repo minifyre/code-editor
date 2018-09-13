@@ -19,7 +19,7 @@ output.renderCodeFromEl=function(editor,el)//el=textarea
 	{lang,value}=el,
 	can=el.parentElement.querySelector('canvas'),
 	ctx=can.getContext('2d'),
-	viewbox=output.viewbox(editor,el),
+	viewbox=output.viewbox(el),
 	styles=output.elStyles2floats(el,'fontSize','lineHeight','tabSize'),
 	//tmp resize canvas to fit text area size
 	{height,width}=el.getBoundingClientRect()

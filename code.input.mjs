@@ -22,6 +22,7 @@ input.keydown=function(editor,evt)
 	if (fn) fn(evt)
 	output.view(editor,target)
 }
+input.keyup=(editor,{target})=>output.renderCodeFromEl(editor,target)
 input.pointerdown=input.pointermove=input.pointerout=
 input.pointerup=(editor,{target})=>output.view(editor,target)
 input.scroll=(editor,{target})=>output.renderCodeFromEl(editor,target)

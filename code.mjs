@@ -11,6 +11,8 @@ export default async function code(url='/node_modules/code-editor/')
 	[css,html]=await Promise.all(files.map(importFile))
 	config.dom=`<style>${css}</style>${html}`
 	customElements.define('code-editor',code.editor)
+
+
 }
 code.editor=function()
 {
@@ -29,7 +31,7 @@ proto.connectedCallback=function()
 	//pointer down should pointerMove,out,or up evt listeners & then remove them
 	// when done 
 	//only recalc cursor info if pointer is held down & moving, thus selecting more or less text
-	'input,keydown,pointerdown,pointermove,pointerout,pointerup,scroll'
+	'input,keydown,keyup,pointerdown,pointermove,pointerout,pointerup,scroll'
 	.split(',')
 	.forEach(fn=>textarea.addEventListener(fn,evt=>input[fn](this,evt)))
 	//tmp testing code
