@@ -1,10 +1,9 @@
-import {config,input,logic,output} from './code.input.mjs'
-import util from './code.util.mjs'
+import {config,input,logic,output,util} from './code.input.mjs'
 export default async function code(url='/node_modules/code-editor/')
 {
 	const {err}=await util.loadScript(url+'/node_modules/prism/prism.js')
 	if (err) return console.error(err)
-	config.Prism=Prism
+	util.Prism=Prism
 	const
 	importFile=path=>fetch(path).then(x=>x.text()),
 	files=['css','html'].map(ext=>url+'code.'+ext),
@@ -61,7 +60,7 @@ onload=function init()
 
 	const langSelector=shadow.querySelector('.langs')
 	
-	langSelector.innerHTML=Object.entries(config.Prism.languages)
+	langSelector.innerHTML=Object.entries(util.Prism.languages)
 	.filter(([key,val])=>typeof val!=='function')
 	.map(([key])=>key)
 	.sort().map(opt=>`<option ${opt===textarea.lang?' selected':''}>${opt}</option>`).join('')

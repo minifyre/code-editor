@@ -1,4 +1,4 @@
-import {config,logic} from './code.logic.mjs'
+import {config,logic,util} from './code.logic.mjs'
 const output={}
 output.elStyles2floats=function(el,...props)
 {
@@ -144,7 +144,7 @@ output.renderCode=function(ctx,txt,opts={})
 	// 	//line number padding
 	// 	textarea.style.paddingLeft=Math.ceil(ctx.measureText('   1 ').width)+'px'
 	// }
-	config.Prism.tokenize(txt,config.Prism.languages[lang])
+	util.Prism.tokenize(txt,util.Prism.languages[lang])
 	.reduce((arr,token)=>arr.concat(flattenTokens(token,['html'])),[])
 	.reduce(function(arr,token)//split newline chars
 	{
@@ -169,4 +169,4 @@ output.renderCode=function(ctx,txt,opts={})
 }
 output.renderTxt=(ctx,txt,x,y,opts)=>Object.assign(ctx,opts).fillText(txt,x,y)
 output.viewbox=({scrollHeight:h,scrollLeft:x,scrollTop:y,scrollWidth:w})=>({height:h,width:w,x,y})
-export {config,logic,output}
+export {config,logic,output,util}

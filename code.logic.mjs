@@ -1,4 +1,5 @@
 import config from './code.config.mjs'
+import util from './code.util.mjs'
 const logic={}
 logic.currentLine=el=>logic.prevLines(el).slice(-1)[0]
 logic.cursor=function(el)
@@ -19,4 +20,4 @@ logic.int2lineNum=function(int,lpad=4)
 }
 logic.prevLines=({selectionStart:i,value})=>value.slice(0,i).split(config.newline)
 logic.tabReplacement=el=>Array(parseInt(getComputedStyle(el).tabSize)).fill(' ').join('')
-export {config,logic}
+export {config,logic,util}
