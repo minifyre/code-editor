@@ -23,7 +23,14 @@ code.editor=class extends HTMLElement
 		const editor=this.shadowRoot.querySelector('textarea')
 		editor[attr]=newVal
 		if (attr==='value') editor.innerHTML=newVal
-		else if (attr==='lang') '@todo update lang selector in footer'
+		else if (attr==='lang')
+		{
+			const
+			sel=this.shadowRoot.querySelector('.langs'),
+			i=[...sel.options].findIndex(opt=>opt.value===newVal)
+			//@todo load lang if i===-1
+			sel.selectedIndex=i
+		}
 		code.output.renderCodeFromEl(this,editor)
 		return newVal
 	}
@@ -51,7 +58,7 @@ code.editor=class extends HTMLElement
 		.sort().map(opt=>`<option ${opt===textarea.lang?' selected':''}>${opt}</option>`).join('')
 		langSelector.addEventListener('change',function({target})
 		{
-			textarea.lang=target.value
+			editor.setAttribute('lang',target.value)
 			output.renderCodeFromEl(editor,textarea)
 		})
 	}
