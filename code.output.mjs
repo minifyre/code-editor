@@ -9,6 +9,16 @@ output.elStyles2floats=function(el,...props)
 		return obj
 	},{})
 }
+output.langTokens=function(obj,prefix)
+{
+	const before=prefix?prefix+'>':''
+	return Object.entries(obj||{})
+	.reduce(function(arr,[key,prop])
+	{
+		const val=before+key
+		return [...arr,val,...output.langTokens(prop.inside,val)]
+	},[])
+}
 output.view=function(editor,el)
 {
 	editor.shadowRoot.querySelector('.cursor-info').innerHTML=logic.cursor(el)
