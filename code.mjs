@@ -2,7 +2,7 @@ import {config,input,logic,output} from './code.input.mjs'
 import util from './code.util.mjs'
 export default async function code(url='/node_modules/code-editor/')
 {
-	const {err}=await util.loadScript(url+'../prism/prism.js')
+	const {err}=await util.loadScript(url+'/node_modules/prism/prism.js')
 	if (err) return console.error(err)
 	config.Prism=Prism
 	const
@@ -11,8 +11,6 @@ export default async function code(url='/node_modules/code-editor/')
 	[css,html]=await Promise.all(files.map(importFile))
 	config.dom=`<style>${css}</style>${html}`
 	customElements.define('code-editor',code.editor)
-
-
 }
 code.editor=function()
 {
@@ -49,13 +47,20 @@ main
 }
 </style>
 <!--body-->
-<main></main>
+<main>Content</main>
 <footer>&amp;copy;</footer>
-<script type=module src=index.js></script>`
+<script type=module src=index.js></script>
+<script>
+onload=function init()
+{
+	//comment
+	const name='value'
+}
+</script>`
 	output.renderCodeFromEl(editor,textarea)
 
-    const langSelector=shadow.querySelector('.langs')
-    
+	const langSelector=shadow.querySelector('.langs')
+	
 	langSelector.innerHTML=Object.entries(config.Prism.languages)
 	.filter(([key,val])=>typeof val!=='function')
 	.map(([key])=>key)
