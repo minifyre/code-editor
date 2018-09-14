@@ -5,7 +5,7 @@
 	"license": "MIT",
 	"version": "0.5.0",
 	"dependencies": {
-		"tokenizer": "minifyre/tokenizer"
+        "prismJS":"PrismJS/prism"
 	},
 	"devDependencies": {
 		"cherub": "minifyre/cherub"

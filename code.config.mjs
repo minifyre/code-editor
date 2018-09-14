@@ -5,14 +5,26 @@ const config=
 }
 config.themes.pane=
 {
+	comment:'#0c0',
 	//html
 	//@todo make parent tokens overwrite default text color (e.g. comment text should be green)
+	'html.doctype':'#ccc',
+	'html.tag':'#09c',
+	'html.tag.attr-name':'#90c',
+	'html.tag.attr-value':'#0cf',
+	'html.attr-value.punctuation':'#999',
+	'html.entity':'#999',
 	text:'#fff',
-	attribute:'#90c',
-	comment:'#0c0',
-	tag:'#09c',
-	operator:'#999',
-	value:'#0cf',
-	entity:'#999'//@todo why is this not working
+
+	'html.style':'#f33',
+	'html.style.property':'#fcc',
+	'html.style.comment':'#0c0',
+
+	'html.script':'#fc0',
+	'html.script.comment':'#0c0',
+
+
+	'html.script.keyword':'#f90',
+	'html.script.string':'#f60'
 }
 export default config
