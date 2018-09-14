@@ -11,62 +11,84 @@ export default async function code(url='/node_modules/code-editor/')
 	config.dom=`<style>${css}</style>${html}`
 	customElements.define('code-editor',code.editor)
 }
-code.editor=function()
-{
-	return Reflect.construct(HTMLElement,[],code.editor)
-}
 Object.assign(code,{config,input,logic,output})
-const proto=code.editor.prototype=Object.create(HTMLElement.prototype)
-proto.connectedCallback=function()
+code.editor=class extends HTMLElement
 {
-	const
-	editor=this,
-	{dom:innerHTML}=config,
-	shadow=Object.assign(this.attachShadow({mode:'open'}),{innerHTML}),
-	textarea=shadow.querySelector('textarea')
-	//+evt listeners
-	//pointer down should pointerMove,out,or up evt listeners & then remove them
-	// when done 
-	//only recalc cursor info if pointer is held down & moving, thus selecting more or less text
-	'input,keydown,keyup,pointerdown,pointermove,pointerout,pointerup,scroll'
-	.split(',')
-	.forEach(fn=>textarea.addEventListener(fn,evt=>input[fn](this,evt)))
-	//tmp testing code
-	textarea.innerHTML=`<!Doctype html>
-<link rel=stylesheet href=index.css>
-<style>
-/*comment*/
-main
-{
-	display:flex;
-	flex:1 1 auto;
-	position:relative;
-	overflow:hidden;
-	width:100%;
-}
-</style>
-<!--body-->
-<main>Content</main>
-<footer>&amp;copy;</footer>
-<script type=module src=index.js></script>
-<script>
-onload=function init()
-{
-	//comment
-	const name='value'
-}
-</script>`
-	output.renderCodeFromEl(editor,textarea)
-
-	const langSelector=shadow.querySelector('.langs')
-	
-	langSelector.innerHTML=Object.entries(util.Prism.languages)
-	.filter(([key,val])=>typeof val!=='function')
-	.map(([key])=>key)
-	.sort().map(opt=>`<option ${opt===textarea.lang?' selected':''}>${opt}</option>`).join('')
-	langSelector.addEventListener('change',function({target})
+	constructor()
 	{
-		textarea.lang=target.value
+		super()
+	}
+	attributeChangedCallback(attr,oldVal,newVal)
+	{
+		const editor=this.shadowRoot.querySelector('textarea')
+		editor[attr]=newVal
+		if (attr==='value') editor.innerHTML=newVal
+		else if (attr==='lang')
+		{
+			const
+			sel=this.shadowRoot.querySelector('.langs'),
+			i=[...sel.options].findIndex(opt=>opt.value===newVal)
+			//@todo load lang if i===-1
+			sel.selectedIndex=i
+		}
+		code.output.renderCodeFromEl(this,editor)
+		return newVal
+	}
+	connectedCallback()
+	{
+		const
+		editor=this,
+		{dom:innerHTML}=config,
+		shadow=Object.assign(this.attachShadow({mode:'open'}),{innerHTML}),
+		textarea=shadow.querySelector('textarea')
+		//+evt listeners
+		//pointer down should pointerMove,out,or up evt listeners & then remove them
+		// when done 
+		//only recalc cursor info if pointer is held down & moving, thus selecting more or less text
+		'input,keydown,keyup,pointerdown,pointermove,pointerout,pointerup,scroll'
+		.split(',')
+		.forEach(fn=>textarea.addEventListener(fn,evt=>input[fn](this,evt)))
 		output.renderCodeFromEl(editor,textarea)
-	})
-}//disconnectedCallback,attributeChangedCallback
+
+		const langSelector=shadow.querySelector('.langs')
+		
+		langSelector.innerHTML=Object.entries(util.Prism.languages)
+		.filter(([key,val])=>typeof val!=='function')
+		.map(([key])=>key)
+		.sort().map(opt=>`<option ${opt===textarea.lang?' selected':''}>${opt}</option>`).join('')
+		langSelector.addEventListener('change',function({target})
+		{
+			editor.setAttribute('lang',target.value)
+			output.renderCodeFromEl(editor,textarea)
+		})
+	}
+	adoptedCallback()
+	{
+		console.error('add adoptedCallback behavior')
+	}
+	disconnectedCallback()
+	{
+		console.error('add disconnectedCallback behavior')
+	}
+	//@todo add tab size & simplify this
+	static get observedAttributes()
+	{
+		return ['lang','value']
+	}
+	get lang()
+	{
+		return this.shadowRoot.querySelector('textarea').lang
+	}
+	get value()
+	{
+		return this.shadowRoot.querySelector('textarea').value
+	}
+	set lang(val)
+	{
+		return this.shadowRoot.querySelector('textarea').lang=val
+	}
+	set value(val)
+	{
+		return this.shadowRoot.querySelector('textarea').value=val
+	}
+}
