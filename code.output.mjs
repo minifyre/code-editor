@@ -23,7 +23,7 @@ output.view=function(editor,el)
 {
 	editor.shadowRoot.querySelector('.cursor-info').innerHTML=logic.cursor(el)
 }
-output.renderCodeFromEl=function(editor,el)//el=textarea
+output.renderCode=function(editor,el)//el=textarea
 {
 	const
 	{lang,value}=el,
@@ -31,20 +31,18 @@ output.renderCodeFromEl=function(editor,el)//el=textarea
 	ctx=can.getContext('2d'),
 	viewbox=output.viewbox(el),
 	styles=output.elStyles2floats(el,'fontSize','lineHeight','tabSize'),
+	txt=value,
 	//tmp resize canvas to fit text area size
-	{height,width}=el.getBoundingClientRect()
-	Object.assign(can,{height,width})
+	{height:h,width:w}=el.getBoundingClientRect()
+	Object.assign(can,{height:h,width:w})
 	styles.colors=config.themes.pane
 	//end tmp
 	output.view(editor,el)
-	output.renderCode(ctx,value,{lang,styles,viewbox,textarea:el})
-}
-output.renderCode=function(ctx,txt,opts={})
-{
+
+
+
 	const
-	{lang,styles,viewbox,textarea}=opts,
 	{width,height}=viewbox,
-	lineNums=true,//@todo decouples horizontal text positioning by a few px...
 	{colors,fontSize,lineHeight}=styles,
 	font=fontSize+'px "Source Code Pro", monospace',
 	adj=Math.ceil(lineHeight/10)//@todo figure out how to make this work with scaling...
@@ -58,27 +56,25 @@ output.renderCode=function(ctx,txt,opts={})
 	pos={x:0,y:0},
 	tab=Array(styles.tabSize).fill(' ').join(''),
 	queue=[],
-	txtWidth=function(txt)
-	{
-		return ctx.measureText(txt.replace(/\t/g,tab)).width
-	},
 	queueTxt=function(txt,opts,config)
 	{
 		const
 		x=pos.x,
 		y=config.pos.y*config.lineHeight
 		queue.push({txt,x,y,opts})
-		config.pos.x+=txtWidth(txt)
+		config.pos.x+=ctx.measureText(txt.replace(/\t/g,tab)).width
 	},
 	newLine=function(pos)
 	{
 		pos.x=0
 		pos.y+=1
-		// if (lineNums)
-		// {
-		// 	queueTxt(logic.int2lineNum(pos.y+1),{fillStyle:'#999'},{lineHeight,pos})
-		// 	pos.x=Math.ceil(pos.x)
-		// }
+		// @todo find a way to fix the horizontal distortion this causes
+		// if (!lineNums) return
+		// queueTxt(logic.int2lineNum(pos.y+1),{fillStyle:'#999'},{lineHeight,pos})
+		// pos.x=Math.ceil(pos.x)
+		// queueTxt(logic.int2lineNum(1),{fillStyle:'#999'},{lineHeight,pos})
+		// //line number padding
+		// textarea.style.paddingLeft=Math.ceil(ctx.measureText('   1 ').width)+'px'
 	},
 	token2queue=function(token,opts)
 	{
@@ -112,30 +108,23 @@ output.renderCode=function(ctx,txt,opts={})
 		if (!Array.isArray(token.content)) return [token]
 		return [...token.content.reduce((arr,x)=>arr.concat(flattenTokens(x,parentTypes)),[])]		
 	}
-	// if (lineNums)
-	// {
-	// 	queueTxt(logic.int2lineNum(1),{fillStyle:'#999'},{lineHeight,pos})
-	// 	//line number padding
-	// 	textarea.style.paddingLeft=Math.ceil(ctx.measureText('   1 ').width)+'px'
-	// }
 	util.Prism.tokenize(txt,util.Prism.languages[lang])
 	.reduce((arr,token)=>arr.concat(flattenTokens(token,['html'])),[])
 	.reduce(function(arr,token)//split newline chars
 	{
 		if (token.type.match('newline')&&token.length>1)
 		{
-			const types=token.type.split('.')
-			types.pop()
-			return arr.concat
-			(
-				token
+			const types=token.type.split('.').slice(0,-1)
+			return [
+				...arr,
+				...token
 				.content
 				.split('')
 				.map(str2token)
 				.map(x=>Object.assign(x,{type:types+'.'+x.type}))
-			)
+			]
 		}
-		return arr.concat([token])
+		return [...arr,token]
 	},[])
 	.forEach(token=>token2queue(token,{colors,lineHeight,pos,tab}))
 	ctx.save()

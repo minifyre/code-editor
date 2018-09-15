@@ -1,7 +1,7 @@
 import {config,logic,output,util} from './code.output.mjs'
 const input={}
 input.alt=(e,x='')=>e.preventDefault(document.execCommand('insertHTML',false,x))
-input.input=(editor,{target})=>output.renderCodeFromEl(editor,target)
+input.input=(editor,{target})=>output.renderCode(editor,target)
 input.keydown=function(editor,evt)
 {
 	const
@@ -22,8 +22,8 @@ input.keydown=function(editor,evt)
 	if (fn) fn(evt)
 	output.view(editor,target)
 }
-input.keyup=(editor,{target})=>output.renderCodeFromEl(editor,target)
+input.keyup=(editor,{target})=>output.renderCode(editor,target)
 input.pointerdown=input.pointermove=input.pointerout=
 input.pointerup=(editor,{target})=>output.view(editor,target)
-input.scroll=(editor,{target})=>output.renderCodeFromEl(editor,target)
+input.scroll=(editor,{target})=>output.renderCode(editor,target)
 export {config,input,logic,output,util}

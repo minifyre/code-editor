@@ -31,7 +31,7 @@ code.editor=class extends HTMLElement
 			//@todo load lang if i===-1
 			sel.selectedIndex=i
 		}
-		code.output.renderCodeFromEl(this,editor)
+		code.output.renderCode(this,editor)
 		return newVal
 	}
 	connectedCallback()
@@ -48,7 +48,7 @@ code.editor=class extends HTMLElement
 		'input,keydown,keyup,pointerdown,pointermove,pointerout,pointerup,scroll'
 		.split(',')
 		.forEach(fn=>textarea.addEventListener(fn,evt=>input[fn](this,evt)))
-		output.renderCodeFromEl(editor,textarea)
+		output.renderCode(editor,textarea)
 
 		const langSelector=shadow.querySelector('.langs')
 		
@@ -59,7 +59,7 @@ code.editor=class extends HTMLElement
 		langSelector.addEventListener('change',function({target})
 		{
 			editor.setAttribute('lang',target.value)
-			output.renderCodeFromEl(editor,textarea)
+			output.renderCode(editor,textarea)
 		})
 	}
 	adoptedCallback()
