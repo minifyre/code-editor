@@ -26,35 +26,25 @@ output.view=function(editor,el)
 output.renderCode=function(editor,el)//el=textarea
 {
 	const
-	{lang,value}=el,
+	{lang,value:txt}=el,
 	can=el.parentElement.querySelector('canvas'),
 	ctx=can.getContext('2d'),
-	viewbox=output.viewbox(el),
-	styles=output.elStyles2floats(el,'fontSize','lineHeight','tabSize'),
-	txt=value,
+	{height,width,x,y}=output.viewbox(el),
+	{fontSize,lineHeight,tabSize}=output.elStyles2floats(el,'fontSize','lineHeight','tabSize'),
+	font=fontSize+'px "Source Code Pro", monospace',
+	colors=config.themes.pane,
 	//tmp resize canvas to fit text area size
 	{height:h,width:w}=el.getBoundingClientRect()
 	Object.assign(can,{height:h,width:w})
-	styles.colors=config.themes.pane
 	//end tmp
 	output.view(editor,el)
-
-
-
-	const
-	{width,height}=viewbox,
-	{colors,fontSize,lineHeight}=styles,
-	font=fontSize+'px "Source Code Pro", monospace',
-	adj=Math.ceil(lineHeight/10)//@todo figure out how to make this work with scaling...
-	ctx.fillStyle='#222'
-	ctx.fillRect(0,0,width,height)
+	output.renderRect(ctx,{fillStyle:'#222'},0,0,width,height)
 	Object.assign(ctx,{fillStyle:'#fff',font,textBaseline:'hanging'})
-	
 	if (!txt.length) return
 	//@todo newlines inside html tags break things
 	const
 	pos={x:0,y:0},
-	tab=Array(styles.tabSize).fill(' ').join(''),
+	tab=Array(tabSize).fill(' ').join(''),
 	queue=[],
 	queueTxt=function(txt,opts,config)
 	{
@@ -81,12 +71,9 @@ output.renderCode=function(editor,el)//el=textarea
 		const
 		{colors,lineHeight,pos}=opts,
 		{content,type}=token,
-		key=Object.keys(colors).reduce(function(old,key)
-		{
-			const match=type.match(key)
-			return match&&key.length>old.length?key:old
-		},'')||'text',
-		fillStyle=colors[key]||'#fff'
+		key=Object.keys(colors)
+		.reduce((old,key)=>type.match(key)&&key.length>old.length?key:old,''),
+		fillStyle=colors[key||'text']||'#fff'
 		queueTxt(content,{fillStyle},{lineHeight,pos})
 		//@todo readd tabs queueTxt(type.match(/tab/)?opts.tab:start,{fillStyle},{lineHeight,pos})
 		if (token.type.match(/newline/)) newLine(pos)
@@ -129,10 +116,11 @@ output.renderCode=function(editor,el)//el=textarea
 	.forEach(token=>token2queue(token,{colors,lineHeight,pos,tab}))
 	ctx.save()
 	//@todo if txt y (or x) is not within the bounds, don't draw it (need to integrate further down)
-	ctx.translate(-viewbox.x,adj-viewbox.y)
+	ctx.translate(-x,Math.ceil(lineHeight/10)-y)//@todo figure out how to make this work with scaling...
 	queue.forEach(({txt,x,y,opts})=>output.renderTxt(ctx,txt,x,y,opts))
 	ctx.restore()
 }
+output.renderRect=(ctx,opts,x,y,w,h=w)=>Object.assign(ctx,opts).fillRect(x,y,w,h)
 output.renderTxt=(ctx,txt,x,y,opts)=>Object.assign(ctx,opts).fillText(txt,x,y)
 output.viewbox=({scrollHeight:h,scrollLeft:x,scrollTop:y,scrollWidth:w})=>({height:h,width:w,x,y})
 export {config,logic,output,util}
