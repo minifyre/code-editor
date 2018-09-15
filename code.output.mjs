@@ -56,10 +56,7 @@ output.renderCode=function(ctx,txt,opts={})
 	//@todo newlines inside html tags break things
 	const
 	pos={x:0,y:0},
-	tab=Array(styles.tabSize).fill(' ').join('')
-
-
-	const
+	tab=Array(styles.tabSize).fill(' ').join(''),
 	queue=[],
 	txtWidth=function(txt)
 	{
@@ -73,30 +70,17 @@ output.renderCode=function(ctx,txt,opts={})
 		queue.push({txt,x,y,opts})
 		config.pos.x+=txtWidth(txt)
 	},
-	token2queue=function(token,opts)
+	newLine=function(pos)
 	{
-		const
-		{colors,lineHeight,pos}=opts,
-		fillStyle=logic.tokenType2color(token.type,colors)||'#fff',
-		{children,type,start,stop}=token
-		//start
-		queueTxt(type.match(/tab/)?opts.tab:start,{fillStyle},{lineHeight,pos})
-		//children
-		children.forEach(token=>token2queue(token,opts))
-		//stop
-		if (stop.length) queueTxt(stop,{fillStyle},{lineHeight,pos})
-		if (token.type.match(/newline/))
-		{
-			pos.x=0
-			pos.y+=1
-			// if (lineNums)
-			// {
-			// 	queueTxt(logic.int2lineNum(pos.y+1),{fillStyle:'#999'},{lineHeight,pos})
-			// 	pos.x=Math.ceil(pos.x)
-			// }
-		}
+		pos.x=0
+		pos.y+=1
+		// if (lineNums)
+		// {
+		// 	queueTxt(logic.int2lineNum(pos.y+1),{fillStyle:'#999'},{lineHeight,pos})
+		// 	pos.x=Math.ceil(pos.x)
+		// }
 	},
-	token2queue2=function(token,opts)
+	token2queue=function(token,opts)
 	{
 		const
 		{colors,lineHeight,pos}=opts,
@@ -109,16 +93,7 @@ output.renderCode=function(ctx,txt,opts={})
 		fillStyle=colors[key]||'#fff'
 		queueTxt(content,{fillStyle},{lineHeight,pos})
 		//@todo readd tabs queueTxt(type.match(/tab/)?opts.tab:start,{fillStyle},{lineHeight,pos})
-		if (token.type.match(/newline/))
-		{
-			pos.x=0
-			pos.y+=1
-			// if (lineNums)
-			// {
-			// 	queueTxt(logic.int2lineNum(pos.y+1),{fillStyle:'#999'},{lineHeight,pos})
-			// 	pos.x=Math.ceil(pos.x)
-			// }
-		}
+		if (token.type.match(/newline/)) newLine(pos)
 	},
 	str2token=function(content)
 	{
@@ -137,7 +112,6 @@ output.renderCode=function(ctx,txt,opts={})
 		if (!Array.isArray(token.content)) return [token]
 		return [...token.content.reduce((arr,x)=>arr.concat(flattenTokens(x,parentTypes)),[])]		
 	}
-
 	// if (lineNums)
 	// {
 	// 	queueTxt(logic.int2lineNum(1),{fillStyle:'#999'},{lineHeight,pos})
@@ -154,13 +128,16 @@ output.renderCode=function(ctx,txt,opts={})
 			types.pop()
 			return arr.concat
 			(
-				token.content.split('')
-				.map(str2token).map(x=>Object.assign(x,{type:types+'.'+x.type}))
+				token
+				.content
+				.split('')
+				.map(str2token)
+				.map(x=>Object.assign(x,{type:types+'.'+x.type}))
 			)
 		}
 		return arr.concat([token])
 	},[])
-	.forEach(token=>token2queue2(token,{colors,lineHeight,pos,tab}))
+	.forEach(token=>token2queue(token,{colors,lineHeight,pos,tab}))
 	ctx.save()
 	//@todo if txt y (or x) is not within the bounds, don't draw it (need to integrate further down)
 	ctx.translate(-viewbox.x,adj-viewbox.y)
