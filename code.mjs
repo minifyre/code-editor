@@ -1,7 +1,7 @@
 import {config,input,logic,output,util} from './code.input.mjs'
 export default async function code(url='/node_modules/code-editor/')
 {
-	const {err}=await util.loadScript(url+'/node_modules/prism/prism.js')
+	const {err}=await util.loadScript(url+'node_modules/prism/prism.js')
 	if (err) return console.error(err)
 	util.Prism=Prism
 	const
@@ -36,6 +36,7 @@ code.editor=class extends HTMLElement
 	}
 	connectedCallback()
 	{
+		//@todo move this stuff into the constructor
 		const
 		editor=this,
 		{dom:innerHTML}=config,
