@@ -80,6 +80,11 @@ code.editor=class extends HTMLElement
 	{
 		return this.shadowRoot.querySelector('textarea').lang
 	}
+	get state()
+	{
+		const {lang,value}=this
+		return {lang,value}
+	}
 	get value()
 	{
 		return this.shadowRoot.querySelector('textarea').value
@@ -87,6 +92,13 @@ code.editor=class extends HTMLElement
 	set lang(val)
 	{
 		return this.shadowRoot.querySelector('textarea').lang=val
+	}
+	set state(val)
+	{
+		//@todo refresh everything: canvas,cursor,lang
+		const newVal=Object.assign(this,val)//@todo make sure this update attrs
+		output.renderCode(this,this.shadowRoot.querySelector('textarea'))
+		return newVal
 	}
 	set value(val)
 	{
