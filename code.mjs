@@ -62,6 +62,7 @@ code.editor=class extends HTMLElement
 			editor.setAttribute('lang',target.value)
 			output.renderCode(editor)
 		})
+		new ResizeObserver(([{target}])=>input.resize({target})).observe(this)
 	}
 	adoptedCallback()
 	{

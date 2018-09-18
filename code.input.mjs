@@ -26,4 +26,5 @@ input.keyup=(editor,{target})=>output.renderCode(editor,target)
 input.pointerdown=input.pointermove=input.pointerout=
 input.pointerup=(editor,{target})=>output.view(editor,target)
 input.scroll=(editor,{target})=>output.renderCode(editor,target)
+input.resize=({target})=>output.renderCode(target)
 export {config,input,logic,output,util}
