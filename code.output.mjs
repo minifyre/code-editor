@@ -26,9 +26,8 @@ output.view=function(editor,el)
 output.renderCode=function(editor)
 {
 	const
-	el=editor.shadowRoot.querySelector('textarea'),
+	[el,can]=['textarea','canvas'].map(x=>editor.shadowRoot.querySelector(x)),
 	{lang,value:txt}=el,
-	can=el.parentElement.querySelector('canvas'),
 	ctx=can.getContext('2d'),
 	{height,width,x,y}=output.viewbox(el),
 	{fontSize,lineHeight,tabSize}=output.elStyles2floats(el,'fontSize','lineHeight','tabSize'),
