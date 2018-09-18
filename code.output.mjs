@@ -23,9 +23,10 @@ output.view=function(editor,el)
 {
 	editor.shadowRoot.querySelector('.cursor-info').innerHTML=logic.cursor(el)
 }
-output.renderCode=function(editor,el)//el=textarea
+output.renderCode=function(editor)
 {
 	const
+	el=editor.shadowRoot.querySelector('textarea'),
 	{lang,value:txt}=el,
 	can=el.parentElement.querySelector('canvas'),
 	ctx=can.getContext('2d'),
