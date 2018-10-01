@@ -1,5 +1,5 @@
-import config from './code.config.mjs'
-import util from './code.util.mjs'
+import config from './config.mjs'
+import util from './util.mjs'
 const logic={}
 logic.currentLine=el=>logic.prevLines(el).slice(-1)[0]
 logic.cursor=function(el)

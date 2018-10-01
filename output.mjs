@@ -1,4 +1,4 @@
-import {config,logic,util} from './code.logic.mjs'
+import {config,logic,util} from './logic.mjs'
 const output={}
 output.elStyles2floats=function(el,...props)
 {

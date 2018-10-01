@@ -1,4 +1,4 @@
-import {config,input,logic,output,util} from './code.input.mjs'
+import {config,input,logic,output,util} from './input.mjs'
 export default async function code(url='/node_modules/code-editor/')
 {
 	const {err}=await util.loadScript(url+'node_modules/prism/prism.js')

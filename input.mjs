@@ -1,4 +1,4 @@
-import {config,logic,output,util} from './code.output.mjs'
+import {config,logic,output,util} from './output.mjs'
 const input={}
 input.alt=(e,x='')=>e.preventDefault(document.execCommand('insertHTML',false,x))
 input.input=(editor,{target})=>output.renderCode(editor,target)
