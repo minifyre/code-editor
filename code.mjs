@@ -97,7 +97,7 @@ code.editor=class extends HTMLElement
 	set state(val)
 	{
 		//@todo refresh everything: canvas,cursor,lang
-		const newVal=Object.assign(this,val)//@todo make sure this update attrs
+		const newVal=Object.assign(this,val)
 		output.renderCode(this)
 		return newVal
 	}
