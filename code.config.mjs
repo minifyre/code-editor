@@ -3,6 +3,10 @@ const config=
 	newline:/\r?\n|\r/g,
 	themes:{}
 }
+config.state=
+{
+	
+}
 config.themes.pane=
 {
 	comment:'#0c0',
