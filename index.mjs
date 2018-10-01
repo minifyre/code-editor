@@ -6,7 +6,7 @@ export default async function code(url='/node_modules/code-editor/')
 	util.Prism=Prism
 	const
 	importFile=path=>fetch(path).then(x=>x.text()),
-	files=['css','html'].map(ext=>url+'code.'+ext),
+	files=['css','html'].map(ext=>url+'index.'+ext),
 	[css,html]=await Promise.all(files.map(importFile))
 	config.dom=`<style>${css}</style>${html}`
 	customElements.define('code-editor',code.editor)
