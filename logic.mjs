@@ -1,6 +1,5 @@
-import config from './config.mjs'
-import util from './util.mjs'
-const logic={}
+import silo from './util.mjs'
+const {config,logic,util}=silo
 logic.currentLine=el=>logic.prevLines(el).slice(-1)[0]
 logic.cursor=function(el)
 {
@@ -16,4 +15,4 @@ logic.indentation=ln=>(ln.match(/^\s*/g)||[''])[0]
 logic.int2lineNum=(int,lpad=4,txt=''+int)=>' '.repeat(lpad-txt.length)+txt+' '
 logic.prevLines=({selectionStart:i,value})=>value.slice(0,i).split(config.newline)
 logic.tabReplacement=el=>Array(parseInt(getComputedStyle(el).tabSize)).fill(' ').join('')
-export {config,logic,util}
+export default silo
