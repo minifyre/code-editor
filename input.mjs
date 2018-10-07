@@ -1,5 +1,5 @@
-import {config,logic,output,util} from './output.mjs'
-const input={}
+import silo from './output.mjs'//@todo switch to logic
+const {config,input,logic,output,util}=silo//@todo eliminate output
 input.alt=(e,x='')=>e.preventDefault(document.execCommand('insertHTML',false,x))
 input.input=(editor,{target})=>output.renderCode(editor,target)
 input.keydown=function(editor,evt)
@@ -27,4 +27,4 @@ input.pointerdown=input.pointermove=input.pointerout=
 input.pointerup=(editor,{target})=>output.view(editor,target)
 input.scroll=(editor,{target})=>output.renderCode(editor,target)
 input.resize=({target})=>output.renderCode(target)
-export {config,input,logic,output,util}
+export default silo

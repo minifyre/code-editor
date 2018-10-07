@@ -1,5 +1,6 @@
-import {config,logic,util} from './logic.mjs'
-const output={}
+import silo from './logic.mjs'
+const
+{config,logic,output,util}=silo
 output.elStyles2floats=function(el,...props)
 {
 	const styles=getComputedStyle(el)
@@ -123,4 +124,4 @@ output.renderCode=function(editor)
 output.renderRect=(ctx,opts,x,y,w,h=w)=>Object.assign(ctx,opts).fillRect(x,y,w,h)
 output.renderTxt=(ctx,txt,x,y,opts)=>Object.assign(ctx,opts).fillText(txt,x,y)
 output.viewbox=({scrollHeight:h,scrollLeft:x,scrollTop:y,scrollWidth:w})=>({height:h,width:w,x,y})
-export {config,logic,output,util}
+export default silo

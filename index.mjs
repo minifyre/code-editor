@@ -1,4 +1,7 @@
-import {config,input,logic,output,util} from './input.mjs'
+import silo from './input.mjs'//@todo switch to output
+const
+{config,input,logic,output,util}=silo,
+{truth,v}=util
 export default async function code(url='/node_modules/code-editor/')
 {
 	const {err}=await util.loadScript(url+'node_modules/prism/prism.js')
@@ -11,7 +14,7 @@ export default async function code(url='/node_modules/code-editor/')
 	config.dom=`<style>${css}</style>${html}`
 	customElements.define('code-editor',code.editor)
 }
-Object.assign(code,{config,input,logic,output})
+Object.assign(code,silo)
 code.editor=class extends HTMLElement
 {
 	constructor()
