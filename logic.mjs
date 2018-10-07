@@ -13,11 +13,7 @@ logic.cursor=function(el)
 }
 logic.findReplace=(txt,[find,swap])=>txt.replace(new RegExp(find,'g'),swap)
 logic.indentation=ln=>(ln.match(/^\s*/g)||[''])[0]
-logic.int2lineNum=function(int,lpad=4)
-{
-	const txt=int.toString()
-	return Array(lpad-txt.length).fill(' ').join('')+txt+' '
-}
+logic.int2lineNum=(int,lpad=4,txt=''+int)=>' '.repeat(lpad-txt.length)+txt+' '
 logic.prevLines=({selectionStart:i,value})=>value.slice(0,i).split(config.newline)
 logic.tabReplacement=el=>Array(parseInt(getComputedStyle(el).tabSize)).fill(' ').join('')
 export {config,logic,util}
