@@ -6,16 +6,36 @@ function output(editor)
 {
 	const
 	{state}=editor,
-	{lang}=state
+	{file,lang}=state,
+	{modified}=file,
 
-	return [v('style',{},config.css),
+	//+evt listeners
+	//pointer down should pointerMove,out,or up evt listeners & then remove them
+	// when done 
+	//only recalc cursor info if pointer is held down & moving, thus selecting more or less text
+	on={}
+	'input,keydown,keyup,pointerdown,pointermove,pointerout,pointerup,scroll'
+	.split(',')
+	.forEach(fn=>on[fn]=evt=>silo.input[fn](editor,evt))
+	//@todo fix lang switcher
+	return [v('style',{},silo.config.css),
 		v('main',{},
-			v('canvas'),
-			v('textarea',{lang,spellcheck:false})
+			v('canvas',{data:{modified},on:{render:()=>output.renderCode(editor)}}),
+			v('textarea',{lang,on,spellcheck:false})
 		),
 		v('footer',{},
 			v('.cursor-info'),//@todo convert to 2 input[type=number] fields
-			v('select.langs')
+			v('select.langs',{on:{change:evt=>silo.input.lang(evt,editor)}},
+				...Object.entries(silo.util.Prism.languages)
+				.filter(([key,val])=>typeof val!=='function')
+				.map(([key])=>key)
+				.sort()
+				.map(function(opt)
+				{
+					const props=opt===lang?{selected:true}:{}
+					return v('option',props,opt)
+				})
+			)
 		)
 	]
 }
