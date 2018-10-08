@@ -1,14 +1,15 @@
 import silo from './util.mjs'
 const {config,logic,util}=silo
 logic.currentLine=el=>logic.prevLines(el).slice(-1)[0]
-logic.cursor=function(el)
+logic.cursor=function(state,el)
 {
 	const
 	length=el.selectionEnd-el.selectionStart,
 	row=logic.prevLines(el).length,
 	tabs=logic.tabReplacement(el),
 	col=logic.currentLine(el).replace(/\t/g,tabs).length+1
-	return [col,row,length].filter(x=>!!x).join(',')
+	
+	state.cursor=[col,row,length].filter(x=>!!x).join(',')
 }
 logic.modify=(state,time=Date.now())=>state.file.modified=time
 logic.findReplace=(txt,[find,swap])=>txt.replace(new RegExp(find,'g'),swap)
