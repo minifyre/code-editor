@@ -27,4 +27,10 @@ input.pointerdown=input.pointermove=input.pointerout=
 input.pointerup=(editor,{target})=>output.view(editor,target)
 input.scroll=(editor,{target})=>output.renderCode(editor,target)
 input.resize=({target})=>output.renderCode(target)
+//@todo cleanup
+input.lang=function({target},editor)
+{
+	editor.setAttribute('lang',target.value)
+	output.renderCode(editor)
+}
 export default silo
