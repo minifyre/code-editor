@@ -4,17 +4,12 @@ const
 {truth,v}=util
 export default async function code(url='/node_modules/code-editor/')
 {
+	//@todo use es6 module loading for Prism.js
 	const {err}=await util.loadScript(url+'node_modules/prism/prism.js')
 	if (err) return console.error(err)
 	util.Prism=Prism
-	const
-	importFile=path=>fetch(path).then(x=>x.text()),
-	files=['css','html'].map(ext=>url+'index.'+ext),
-	[css,html]=await Promise.all(files.map(importFile))
-	//@todo simplify with await silo(url,'code-editor',code.editor)
-	config.css=css
-	config.dom=`<style>${css}</style>${html}`
-	customElements.define('code-editor',code.editor)
+
+	await silo(url,'code-editor',code.editor)
 }
 Object.assign(code,silo)
 code.editor=class extends silo.viewer
