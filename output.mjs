@@ -6,7 +6,7 @@ function output(editor)
 {
 	const
 	{state}=editor,
-	{file,lang}=state,
+	{cursor,file,lang}=state,
 	{modified}=file,
 
 	//+evt listeners
@@ -24,7 +24,8 @@ function output(editor)
 			v('textarea',{lang,on,spellcheck:false})
 		),
 		v('footer',{},
-			v('.cursor-info'),//@todo convert to 2 input[type=number] fields
+			//@todo cursor is not updating fast enough (1 char behind...)
+			v('.cursor-info',{},cursor),//@todo convert to 2 input[type=number] fields
 			v('select.langs',{on:{change:evt=>silo.input.lang(evt,editor)}},
 				...Object.entries(silo.util.Prism.languages)
 				.filter(([key,val])=>typeof val!=='function')
@@ -58,10 +59,6 @@ output.langTokens=function(obj,prefix)
 		return [...arr,val,...output.langTokens(prop.inside,val)]
 	},[])
 }
-output.view=function(editor,el)
-{
-	editor.shadowRoot.querySelector('.cursor-info').innerHTML=logic.cursor(el)
-}
 output.renderCode=function(editor)
 {
 	const
@@ -76,7 +73,6 @@ output.renderCode=function(editor)
 	{height:h,width:w}=el.getBoundingClientRect()
 	Object.assign(can,{height:h,width:w})
 	//end tmp
-	output.view(editor,el)
 	output.renderRect(ctx,{fillStyle:'#222'},0,0,width,height)
 	Object.assign(ctx,{fillStyle:'#fff',font,textBaseline:'hanging'})
 	if (!txt.length) return

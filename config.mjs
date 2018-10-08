@@ -5,6 +5,7 @@ config.state=
 {
 	value:'',//@todo eliminate
 
+	cursor:'0,0',
 	file:{value:''},
 	lang:'html'
 }

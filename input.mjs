@@ -1,7 +1,8 @@
 import silo from './output.mjs'//@todo switch to logic
 const {config,input,logic,output,util}=silo//@todo eliminate output
 input.alt=(e,x='')=>e.preventDefault(document.execCommand('insertHTML',false,x))
-input.input=(editor,{target})=>output.renderCode(editor,target)
+//@todo make editor the 2nd parameter for everything
+input.input=(editor,{target})=>logic.modify(editor.state)
 input.keydown=function(editor,evt)
 {
 	const
@@ -20,11 +21,13 @@ input.keydown=function(editor,evt)
 	},
 	fn=fns[key]
 	if (fn) fn(evt)
-	output.view(editor,target)
+
+	logic.cursor(editor.state,target)
 }
 input.keyup=(editor,{target})=>output.renderCode(editor,target)
+//@todo pointermove should only be active if pointer down was triggered first
 input.pointerdown=input.pointermove=input.pointerout=
-input.pointerup=(editor,{target})=>output.view(editor,target)
+input.pointerup=(editor,{target})=>logic.cursor(editor.state,target)
 input.scroll=(editor,{target})=>output.renderCode(editor,target)
 input.resize=({target})=>output.renderCode(target)
 //@todo cleanup
