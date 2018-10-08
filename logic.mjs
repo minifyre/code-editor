@@ -10,6 +10,7 @@ logic.cursor=function(el)
 	col=logic.currentLine(el).replace(/\t/g,tabs).length+1
 	return [col,row,length].filter(x=>!!x).join(',')
 }
+logic.modify=(state,time=Date.now())=>state.file.modified=time
 logic.findReplace=(txt,[find,swap])=>txt.replace(new RegExp(find,'g'),swap)
 logic.indentation=ln=>(ln.match(/^\s*/g)||[''])[0]
 logic.int2lineNum=(int,lpad=4,txt=''+int)=>' '.repeat(lpad-txt.length)+txt+' '
