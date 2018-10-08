@@ -15,7 +15,7 @@ export default async function code(url='/node_modules/code-editor/')
 	customElements.define('code-editor',code.editor)
 }
 Object.assign(code,silo)
-code.editor=class extends HTMLElement
+code.editor=class extends silo.viewer
 {
 	constructor()
 	{
@@ -41,9 +41,8 @@ code.editor=class extends HTMLElement
 	{
 		//@todo move this stuff into the constructor
 		const
-		editor=this,
 		{dom:innerHTML}=config,
-		shadow=Object.assign(this.attachShadow({mode:'open'}),{innerHTML}),
+		shadow=Object.assign(this.shadowRoot,{innerHTML}),
 		textarea=shadow.querySelector('textarea')
 		//+evt listeners
 		//pointer down should pointerMove,out,or up evt listeners & then remove them
@@ -52,7 +51,7 @@ code.editor=class extends HTMLElement
 		'input,keydown,keyup,pointerdown,pointermove,pointerout,pointerup,scroll'
 		.split(',')
 		.forEach(fn=>textarea.addEventListener(fn,evt=>input[fn](this,evt)))
-		output.renderCode(editor)
+		output.renderCode(this)
 
 		const langSelector=shadow.querySelector('.langs')
 		
@@ -62,8 +61,8 @@ code.editor=class extends HTMLElement
 		.sort().map(opt=>`<option ${opt===textarea.lang?' selected':''}>${opt}</option>`).join('')
 		langSelector.addEventListener('change',function({target})
 		{
-			editor.setAttribute('lang',target.value)
-			output.renderCode(editor)
+			this.setAttribute('lang',target.value)
+			output.renderCode(this)
 		})
 		new ResizeObserver(([{target}])=>input.resize({target})).observe(this)
 	}
