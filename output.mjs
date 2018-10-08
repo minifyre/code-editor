@@ -1,5 +1,45 @@
-import {config,logic,util} from './logic.mjs'
-const output={}
+import silo from './input.mjs'
+const
+{config,input,logic,util}=silo,
+{v}=util
+function output(editor)
+{
+	const
+	{state}=editor,
+	{cursor,file,lang}=state,
+	{modified}=file,
+
+	//+evt listeners
+	//pointer down should pointerMove,out,or up evt listeners & then remove them
+	// when done 
+	//only recalc cursor info if pointer is held down & moving, thus selecting more or less text
+	on={}
+	'input,keydown,keyup,pointerdown,pointermove,pointerout,pointerup,scroll'
+	.split(',')
+	.forEach(fn=>on[fn]=evt=>silo.input[fn](editor,evt))
+	//@todo fix lang switcher
+	return [v('style',{},silo.config.css),
+		v('main',{},
+			v('canvas',{data:{modified},on:{render:()=>output.renderCode(editor)}}),
+			v('textarea',{lang,on,spellcheck:false})
+		),
+		v('footer',{},
+			//@todo cursor is not updating fast enough (1 char behind...)
+			v('.cursor-info',{},cursor),//@todo convert to 2 input[type=number] fields
+			v('select.langs',{on:{change:evt=>silo.input.lang(evt,editor)}},
+				...Object.entries(silo.util.Prism.languages)
+				.filter(([key,val])=>typeof val!=='function')
+				.map(([key])=>key)
+				.sort()
+				.map(function(opt)
+				{
+					const props=opt===lang?{selected:true}:{}
+					return v('option',props,opt)
+				})
+			)
+		)
+	]
+}
 output.elStyles2floats=function(el,...props)
 {
 	const styles=getComputedStyle(el)
@@ -19,12 +59,9 @@ output.langTokens=function(obj,prefix)
 		return [...arr,val,...output.langTokens(prop.inside,val)]
 	},[])
 }
-output.view=function(editor,el)
-{
-	editor.shadowRoot.querySelector('.cursor-info').innerHTML=logic.cursor(el)
-}
 output.renderCode=function(editor)
 {
+	//@todo recalc cursor position in case another view changed the value?
 	const
 	[el,can]=['textarea','canvas'].map(x=>editor.shadowRoot.querySelector(x)),
 	{lang,value:txt}=el,
@@ -37,7 +74,6 @@ output.renderCode=function(editor)
 	{height:h,width:w}=el.getBoundingClientRect()
 	Object.assign(can,{height:h,width:w})
 	//end tmp
-	output.view(editor,el)
 	output.renderRect(ctx,{fillStyle:'#222'},0,0,width,height)
 	Object.assign(ctx,{fillStyle:'#fff',font,textBaseline:'hanging'})
 	if (!txt.length) return
@@ -123,4 +159,4 @@ output.renderCode=function(editor)
 output.renderRect=(ctx,opts,x,y,w,h=w)=>Object.assign(ctx,opts).fillRect(x,y,w,h)
 output.renderTxt=(ctx,txt,x,y,opts)=>Object.assign(ctx,opts).fillText(txt,x,y)
 output.viewbox=({scrollHeight:h,scrollLeft:x,scrollTop:y,scrollWidth:w})=>({height:h,width:w,x,y})
-export {config,logic,output,util}
+export default Object.assign(silo,{output})

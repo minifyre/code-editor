@@ -1,12 +1,15 @@
-const config=
-{
-	newline:/\r?\n|\r/g,
-	themes:{}
-}
+import silo from './node_modules/pane-viewer/index.mjs'
+const {config}=silo
+config.newline=/\r?\n|\r/g
 config.state=
 {
-	
+	value:'',//@todo eliminate
+
+	cursor:'0,0',
+	file:{value:''},
+	lang:'html'
 }
+config.themes={}
 config.themes.pane=
 {
 	comment:'#0c0',
@@ -31,4 +34,4 @@ config.themes.pane=
 	'html.script.keyword':'#f90',
 	'html.script.string':'#f60'
 }
-export default config
+export default silo
