@@ -1,4 +1,4 @@
-import silo from './input.mjs'//@todo switch to output
+import silo from './output.mjs'
 const
 {config,input,logic,output,util}=silo,
 {truth,v}=util

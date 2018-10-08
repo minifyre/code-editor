@@ -1,5 +1,5 @@
-import silo from './output.mjs'//@todo switch to logic
-const {config,input,logic,output,util}=silo//@todo eliminate output
+import silo from './logic.mjs'
+const {config,input,logic,util}=silo
 input.alt=(e,x='')=>e.preventDefault(document.execCommand('insertHTML',false,x))
 //@todo make editor the 2nd parameter for everything
 input.input=(editor,{target})=>logic.modify(editor.state)
@@ -24,16 +24,16 @@ input.keydown=function(editor,evt)
 
 	logic.cursor(editor.state,target)
 }
-input.keyup=(editor,{target})=>output.renderCode(editor,target)
+input.keyup=(editor,{target})=>logic.cursor(editor.state,target)
 //@todo pointermove should only be active if pointer down was triggered first
 input.pointerdown=input.pointermove=input.pointerout=
 input.pointerup=(editor,{target})=>logic.cursor(editor.state,target)
-input.scroll=(editor,{target})=>output.renderCode(editor,target)
-input.resize=({target})=>output.renderCode(target)
+input.scroll=(editor,{target})=>logic.modify(editor.state)
+input.resize=({target})=>logic.modify(util.findParent(target,'code-editor').state)
 //@todo cleanup
 input.lang=function({target},editor)
 {
 	editor.setAttribute('lang',target.value)
-	output.renderCode(editor)
+	logic.modify(editor.state)
 }
 export default silo

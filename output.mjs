@@ -1,6 +1,6 @@
-import silo from './logic.mjs'
+import silo from './input.mjs'
 const
-{config,logic,util}=silo,
+{config,input,logic,util}=silo,
 {v}=util
 function output(editor)
 {
@@ -61,6 +61,7 @@ output.langTokens=function(obj,prefix)
 }
 output.renderCode=function(editor)
 {
+	//@todo recalc cursor position in case another view changed the value?
 	const
 	[el,can]=['textarea','canvas'].map(x=>editor.shadowRoot.querySelector(x)),
 	{lang,value:txt}=el,
