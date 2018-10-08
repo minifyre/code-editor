@@ -1,6 +1,24 @@
 import silo from './logic.mjs'
 const
-{config,logic,output,util}=silo
+{config,logic,util}=silo,
+{v}=util
+function output(editor)
+{
+	const
+	{state}=editor,
+	{lang}=state
+
+	return [v('style',{},config.css),
+		v('main',{},
+			v('canvas'),
+			v('textarea',{lang,spellcheck:false})
+		),
+		v('footer',{},
+			v('.cursor-info'),//@todo convert to 2 input[type=number] fields
+			v('select.langs')
+		)
+	]
+}
 output.elStyles2floats=function(el,...props)
 {
 	const styles=getComputedStyle(el)
@@ -124,4 +142,4 @@ output.renderCode=function(editor)
 output.renderRect=(ctx,opts,x,y,w,h=w)=>Object.assign(ctx,opts).fillRect(x,y,w,h)
 output.renderTxt=(ctx,txt,x,y,opts)=>Object.assign(ctx,opts).fillText(txt,x,y)
 output.viewbox=({scrollHeight:h,scrollLeft:x,scrollTop:y,scrollWidth:w})=>({height:h,width:w,x,y})
-export default silo
+export default Object.assign(silo,{output})
