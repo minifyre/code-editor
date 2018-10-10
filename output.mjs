@@ -21,7 +21,7 @@ function output(editor)
 	return [v('style',{},silo.config.css),
 		v('main',{},
 			v('canvas',{data:{modified},on:{render:()=>output.renderCode(editor)}}),
-			v('textarea',{lang,on,spellcheck:false})
+			v('textarea',{lang,on,spellcheck:false},file.value)
 		),
 		v('footer',{},
 			//@todo cursor is not updating fast enough (1 char behind...)

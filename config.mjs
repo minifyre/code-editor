@@ -3,8 +3,6 @@ const {config}=silo
 config.newline=/\r?\n|\r/g
 config.state=
 {
-	value:'',//@todo eliminate
-
 	cursor:'0,0',
 	file:{value:''},
 	lang:'html',
