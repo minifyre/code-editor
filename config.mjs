@@ -7,7 +7,8 @@ config.state=
 
 	cursor:'0,0',
 	file:{value:''},
-	lang:'html'
+	lang:'html',
+	type:'code-editor'
 }
 config.themes={}
 config.themes.pane=
