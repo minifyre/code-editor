@@ -5,7 +5,7 @@ util.loadScript=function(src)//for old timey scripts that pollute global scope
 {
 	return new Promise(function(res,rej)
 	{
-		document.body.appendChild(Object.assign
+		document.head.appendChild(Object.assign
 		(
 			document.createElement('script'),
 			{
