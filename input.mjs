@@ -2,7 +2,7 @@ import silo from './logic.mjs'
 const {config,input,logic,util}=silo
 input.alt=(e,x='')=>e.preventDefault(document.execCommand('insertHTML',false,x))
 //@todo make editor the 2nd parameter for everything
-input.input=(editor,{target})=>logic.modify(editor.state)
+input.input=(editor,{target})=>logic.update(editor.state,target.value)
 input.keydown=function(editor,evt)
 {
 	const
@@ -21,7 +21,6 @@ input.keydown=function(editor,evt)
 	},
 	fn=fns[key]
 	if (fn) fn(evt)
-
 	logic.cursor(editor.state,target)
 }
 input.keyup=(editor,{target})=>logic.cursor(editor.state,target)

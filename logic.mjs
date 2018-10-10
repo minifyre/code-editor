@@ -11,6 +11,12 @@ logic.cursor=function(state,el)
 	
 	state.cursor=[col,row,length].filter(x=>!!x).join(',')
 }
+logic.update=function(state,value)
+{//@todo optimize by splicing in text at cursor position
+	//(prevents overwriting the entire thing each update cycle)
+	state.file.value=value
+	logic.modify(state)
+}
 logic.modify=(state,time=Date.now())=>state.file.modified=time
 logic.findReplace=(txt,[find,swap])=>txt.replace(new RegExp(find,'g'),swap)
 logic.indentation=ln=>(ln.match(/^\s*/g)||[''])[0]
