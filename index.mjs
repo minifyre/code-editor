@@ -16,10 +16,7 @@ code.editor=class extends silo.viewer
 {
 	constructor(state)
 	{
-		super()
-		let renderer=x=>x
-		this.state=truth(logic(state),(...args)=>renderer(args)).state
-		this.render=renderer=v.render(this.shadowRoot,this,output)
+		super(state,silo)
 		//@todo is it possible to get this into output?
 		new ResizeObserver(([{target}])=>input.resize({target})).observe(this)
 	}
