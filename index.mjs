@@ -9,7 +9,7 @@ export default async function code(url='/node_modules/code-editor/')
 	if (err) return console.error(err)
 	util.Prism=Prism
 
-	await silo(url,'code-editor',code.editor)
+	await util.mkCustomEl(url,'code-editor',code.editor)
 }
 Object.assign(code,silo)
 code.editor=class extends silo.viewer
