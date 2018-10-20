@@ -3,10 +3,13 @@ const {config}=silo
 config.newline=/\r?\n|\r/g
 config.state=
 {
-	cursor:'0,0',
 	file:{value:''},
 	lang:'html',
-	type:'code-editor'
+	type:'code-editor',
+	view:
+	{
+		cursor:'0,0'
+	}
 }
 config.themes={}
 config.themes.pane=

@@ -9,7 +9,7 @@ logic.cursor=function(state,el)
 	tabs=logic.tabReplacement(el),
 	col=logic.currentLine(el).replace(/\t/g,tabs).length+1
 	
-	state.cursor=[col,row,length].filter(x=>!!x).join(',')
+	state.view.cursor=[col,row,length].filter(x=>!!x).join(',')
 }
 logic.update=function(state,value)
 {//@todo optimize by splicing in text at cursor position
