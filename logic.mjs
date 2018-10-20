@@ -11,6 +11,11 @@ logic.cursor=function(state,el)
 	
 	state.view.cursor=[col,row,length].filter(x=>!!x).join(',')
 }
+logic.lang=function(state,value)
+{
+	state.view.lang=value
+	logic.modify(state)
+}
 logic.update=function(state,value)
 {//@todo optimize by splicing in text at cursor position
 	//(prevents overwriting the entire thing each update cycle)

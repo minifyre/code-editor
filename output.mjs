@@ -6,8 +6,8 @@ function output(editor)
 {
 	const
 	{state}=editor,
-	{cursor}=state.view,
-	{file,lang}=state,
+	{cursor,lang}=state.view,
+	{file}=state,
 	{modified}=file,
 
 	//+evt listeners

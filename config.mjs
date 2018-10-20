@@ -4,11 +4,11 @@ config.newline=/\r?\n|\r/g
 config.state=
 {
 	file:{value:''},
-	lang:'html',
 	type:'code-editor',
 	view:
 	{
-		cursor:'0,0'
+		cursor:'0,0',
+		lang:'html'
 	}
 }
 config.themes={}

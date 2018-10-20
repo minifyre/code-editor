@@ -24,15 +24,10 @@ input.keydown=function(editor,evt)
 	logic.cursor(editor.state,target)
 }
 input.keyup=(editor,{target})=>logic.cursor(editor.state,target)
+input.lang=({target},editor)=>logic.lang(editor.state,target.value)
 //@todo pointermove should only be active if pointer down was triggered first
 input.pointerdown=input.pointermove=input.pointerout=
 input.pointerup=(editor,{target})=>logic.cursor(editor.state,target)
 input.scroll=(editor,{target})=>logic.modify(editor.state)
 input.resize=({target})=>logic.modify(util.findParent(target,'code-editor').state)
-//@todo cleanup
-input.lang=function({target},editor)
-{
-	editor.setAttribute('lang',target.value)
-	logic.modify(editor.state)
-}
 export default silo
