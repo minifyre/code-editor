@@ -9,7 +9,18 @@ logic.cursor=function(state,el)
 	tabs=logic.tabReplacement(el),
 	col=logic.currentLine(el).replace(/\t/g,tabs).length+1
 	
-	state.cursor=[col,row,length].filter(x=>!!x).join(',')
+	state.view.cursor=[col,row,length].filter(x=>!!x).join(',')
+}
+logic.lang=function(state,value)
+{
+	state.view.lang=value
+	logic.modify(state)
+}
+logic.update=function(state,value)
+{//@todo optimize by splicing in text at cursor position
+	//(prevents overwriting the entire thing each update cycle)
+	state.file.value=value
+	logic.modify(state)
 }
 logic.modify=(state,time=Date.now())=>state.file.modified=time
 logic.findReplace=(txt,[find,swap])=>txt.replace(new RegExp(find,'g'),swap)
