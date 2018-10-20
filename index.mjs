@@ -9,6 +9,12 @@ export default async function code(url='/node_modules/code-editor/')
 	if (err) return console.error(err)
 	util.Prism=Prism
 
+	//get available langs, themes, & plugins
+	await fetch(url+'node_modules/prism/components.js')
+	.then(res=>res.text())
+	.then(body=>new Function('components',body+'return components')())
+	.then(({languages:langs,plugins,themes})=>Object.assign(util,{langs,plugins,themes}))
+
 	await util.mkCustomEl(url,'code-editor',code.editor)
 }
 Object.assign(code,silo)
