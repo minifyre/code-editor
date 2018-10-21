@@ -1,9 +1,15 @@
 import silo from './config.mjs'
 export default silo
 const {util}=silo
-//@todo eliminate
-util.loadScript=function(src)//for old scripts that mutate the global scope
+util.asyncMap=function(arr,cb)
 {
+	return arr.reduce(async function(promiseArr,item)
+	{
+		return [...await promiseArr,await cb(item)]
+	},Promise.resolve([]))
+}
+util.loadScript=function(src)//for old scripts that mutate the global scope
+{//@todo eliminate loadScript
 	return new Promise(function(onload,onerror)
 	{
 		document.head.appendChild
@@ -13,25 +19,24 @@ util.loadScript=function(src)//for old scripts that mutate the global scope
 	})
 	.finally(rtn=>(rtn instanceof Error?{err:rtn}:{data:rtn}))
 }
-
-
-
-util.loadPrism=async function(url)
+//everything below here relates directly to prism-js
+util.loadPrism=async function()
 {
-	//@todo use es6 module loading for Prism.js
-	const {err}=await util.loadScript('./node_modules/prism/components/prism-core.js')
+	//load prism//@todo use es6 module import
+	const
+	url='./node_modules/prism/',
+	{err}=await util.loadScript(url+'components/prism-core.js')
 	//const {err}=await util.loadScript(url+'node_modules/prism/prism.js')
 	if(err) return console.error(err)
+	const prism=window.Prism
 
-	const
-	prism=window.Prism,
 	//get available langs, themes, & plugins
-	components=await fetch('./node_modules/prism/components.js')
+	prism.components=await fetch(url+'components.js')
 	.then(res=>res.text())
 	.then(body=>new Function('components',body+'return components')())
 
 	//show all loadable langs
-	Object.entries(components.languages)
+	Object.entries(prism.components.languages)
 	.forEach(function([lang,val])
 	{
 		if(lang==='meta') return
@@ -40,59 +45,83 @@ util.loadPrism=async function(url)
 		aliases=!alias?[]:
 				Array.isArray(alias)?alias:[alias]
 
-		aliases.concat([lang]).forEach(lang=>Prism.languages[lang]=false)
+		aliases.concat([lang]).forEach(lang=>prism.languages[lang]=false)
 	})
-
 	//@todo show loadable themes
 	//@todo show loadable plugins
 
+	//load default langs
+	await util.loadPrismLangs(prism,'html,css,js'.split(','))
 
-
-	// components.languages.forEach(function(lang)
-	// {
-	// 	prism.languages=lang
-	// })
-
-
-	// await fetch(url+'node_modules/prism/components/prism-markup.js')
-	// .then(res=>res.text())
-	// .then(body=>new Function('Prism',body+'return Prism')(prism))
-
-	console.log(prism)
-
-	// //@todo use es6 module loading for Prism.js
-	// const
-	// dir=url+'node_modules/prism/',
-	// {err}=await util.loadScript(dir+'/components/prism-core.js')
-	// if (err) return console.error(err)
-
-	// console.log(Prism)
-
-	// //get available langs, themes, & plugins
-	// // await fetch(dir+'/components.js')
-	// // .then(res=>res.text())
-	// // .then(body=>new Function('components',body+'return components')())
-	// // .then(({languages:langs,plugins,themes})=>Object.assign(util,{langs,plugins,themes}))
-
-	// //var loadComponents = require('./components/index.js')
-	// return Prism
 	return prism
 }
-
-
-
-
-
-function getPeerDependentsMap()
+//without dependencies prevents reloading langs to avoid avoid circular references
+util.loadPrismLangs=async function(prism,aliases=[],withoutDependencies=false)
 {
-	return Object.entries(components.languages)
+	const
+	{components}=prism,
+	langs=(Array.isArray(aliases)?aliases:[aliases])
+	.filter(x=>x!=='meta')
+	.map(function(alias)
+	{//convert aliases to language names
+		const val=components.languages[alias]
+		return val?[alias,val]:Object.entries(components.languages)
+		.find(function([_,val])
+		{
+			if(!val.alias) return
+			const aliases=Array.isArray(val.alias)?val.alias:[val.alias]
+			return aliases.indexOf(alias)!==-1
+		})
+	})
+	.map(([key])=>key),
+	// If no argument is passed, load all components
+	arr=!langs.length?Object.keys(components.languages):langs
+
+	if(!arr.length) return
+
+	util.asyncMap(arr,async function(lang)
+	{
+		const definition=components.languages[lang]
+
+		if(!definition) return console.warn('Language does not exist '+lang)
+
+		// Load dependencies first
+		if(!withoutDependencies&&definition.require) await util.loadPrismLangs(prism,definition.require)
+
+		delete prism.languages[lang]
+		await fetch(`./node_modules/prism/components/prism-${lang}.js`)
+		.then(res=>res.text())
+		.then(body=>new Function('Prism',body)(prism))
+
+		// Reload dependents
+		const dependents=util.getPeerDependents(lang)
+		.filter(function(dependent)
+		{
+			// If dependent language was already loaded,
+			// we want to reload it.
+			if(Prism.languages[dependent])
+			{
+				delete Prism.languages[dependent]
+				return true
+			}
+			return false
+		})
+
+		if(dependents.length) util.loadPrismLangs(prism,dependents,true)
+		
+		return
+	})
+}
+util.getPeerDependentsMap=function()
+{
+	return Object.entries(util.Prism.components.languages)
 	.reduce(function(peerDependentsMap,[language,value])
 	{
 		const {peerDependencies}=value
 
 		if(!peerDependencies) return peerDependentsMap//ignores meta as well
 
-		;(!Array.isArray(peerDependencies)?peerDependencies:[peerDependencies])
+		;(Array.isArray(peerDependencies)?peerDependencies:[peerDependencies])
 		.forEach(function(depenency)
 		{
 			if(!peerDependentsMap[depenency]) peerDependentsMap[depenency]=[]
@@ -103,57 +132,9 @@ function getPeerDependentsMap()
 		return peerDependentsMap
 	},{})
 }
-
-function getPeerDependents(mainLanguage)
+util.getPeerDependents=function(mainLanguage)
 {
-	if(!peerDependentsMap) peerDependentsMap=getPeerDependentsMap()
+	if(!util.peerDependentsMap) util.peerDependentsMap=util.getPeerDependentsMap()
 
-	return peerDependentsMap[mainLanguage]||[]
-}
-
-function loadLanguages(arr,withoutDependencies)
-{
-	// If no argument is passed, load all components
-	if(!arr) arr=Object.keys(components.languages).filter(lang=>lang!=='meta')
-
-	if(arr&&!arr.length) return
-
-	if(!Array.isArray(arr)) arr=[arr]
-
-	arr.forEach(function(lang)
-	{
-		const def=components.languages[lang]
-		if (!def)
-		{
-			console.warn('Language does not exist '+lang)
-			return
-		}
-
-		console.log(def)
-
-		// // Load dependencies first
-		// if(!withoutDependencies&&def.require) loadLanguages(def.require)
-
-		// const pathToLanguage='./prism-'+lang
-
-		// delete require.cache[require.resolve(pathToLanguage)]
-		// delete Prism.languages[lang]
-		// require(pathToLanguage)
-
-		// // Reload dependents
-		// const dependents=getPeerDependents(lang)
-		// .filter(function(dependent)
-		// {
-		// 	// If dependent language was already loaded,
-		// 	// we want to reload it.
-		// 	if(Prism.languages[dependent])
-		// 	{
-		// 		delete Prism.languages[dependent]
-		// 		return true
-		// 	}
-		// 	return false
-		// })
-
-		// if(dependents.length) loadLanguages(dependents,true)
-	})
+	return util.peerDependentsMap[mainLanguage]||[]
 }
