@@ -18,7 +18,7 @@ function output(editor)
 	'input,keydown,keyup,pointerdown,pointermove,pointerout,pointerup,scroll'
 	.split(',')
 	.forEach(fn=>on[fn]=evt=>silo.input[fn](editor,evt))
-	//@todo fix lang switcher
+
 	return [v('style',{},silo.config.css),
 		v('main',{},
 			v('canvas',{data:{modified},on:{render:()=>output.renderCode(editor)}}),
@@ -28,14 +28,18 @@ function output(editor)
 			//@todo cursor is not updating fast enough (1 char behind...)
 			v('.cursor-info',{},cursor),//@todo convert to 2 input[type=number] fields
 			v('select.langs',{on:{change:evt=>silo.input.lang(evt,editor)}},
-				...Object.entries(silo.util.Prism.languages)
+				...Object.entries(util.Prism.languages)
 				.filter(([key,val])=>typeof val!=='function')
 				.map(([key])=>key)
 				.sort()
-				.map(function(opt)
+				.map(function(value)
 				{
-					const props=opt===lang?{selected:true}:{}
-					return v('option',props,opt)
+					const
+					loaded=util.Prism.languages[value],
+					selected=value===lang?{selected:true}:{},
+					props=Object.assign({data:{loaded},value},selected)
+
+					return v('option',props,(loaded?'':'*')+value)
 				})
 			)
 		)
