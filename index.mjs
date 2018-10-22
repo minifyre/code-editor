@@ -6,6 +6,10 @@ export default async function code(url='/node_modules/code-editor/')
 {
 	util.Prism=await util.prism.load()
 
+	await util.Prism.loadThemes('Dark')
+
+	util.prismTheme2json()
+
 	await util.mkCustomEl(url,'code-editor',code.editor)
 }
 Object.assign(code,silo)
