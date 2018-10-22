@@ -30,6 +30,7 @@ function output(editor)
 			v('select.langs',{on:{change:evt=>silo.input.lang(evt,editor)}},
 				...Object.entries(util.Prism.languages)
 				.filter(([key,val])=>typeof val!=='function')
+				.filter(([key,val])=>!key.match(/-extras$/))
 				.map(([key])=>key)
 				.sort()
 				.map(function(value)
