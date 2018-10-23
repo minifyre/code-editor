@@ -80,7 +80,7 @@ output.renderCode=function(editor)
 	{height:h,width:w}=el.getBoundingClientRect()
 	Object.assign(can,{height:h,width:w})
 	//end tmp
-	output.renderRect(ctx,{fillStyle:'#222'},0,0,width,height)
+	output.renderRect(ctx,{fillStyle:colors.background},0,0,width,height)
 	Object.assign(ctx,{fillStyle:'#fff',font,textBaseline:'hanging'})
 	if (!txt.length) return
 	//@todo newlines inside html tags break things

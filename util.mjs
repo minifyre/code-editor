@@ -1,6 +1,6 @@
 import silo from './config.mjs'
 export default silo
-const {util}=silo
+const {config,util}=silo
 
 import prism from './node_modules/prism-plus/index.js'
 util.prism=prism
@@ -54,7 +54,7 @@ util.prismTheme2json=function(name='Dark')
 
 		const relevantRules=
 				Object.entries(rules)
-				.filter(([prop])=>prop.match(/background|color|opacity/))
+				.filter(([prop])=>prop.match(/background|color/))
 				.filter(([prop,val])=>!(''+val).match(/none/))
 				.reduce((obj,[prop,val])=>Object.assign(obj,{[prop]:val}),{})
 		
@@ -64,7 +64,7 @@ util.prismTheme2json=function(name='Dark')
 
 	const editor=/code|pre/
 
-	console.log(relevantRules.reduce(function(obj,[selector,rules])
+	const ruleset=relevantRules.reduce(function(obj,[selector,rules])
 	{
 		if(!selector.content?selector.match(editor):
 			selector.content.some(x=>(x.content||x).match(editor)))
@@ -78,10 +78,27 @@ util.prismTheme2json=function(name='Dark')
 		}
 		else
 		{
+			//@todo handle nested rules
 			;(selector.content||[selector])
+			.map(x=>(x.content||x).replace(/\s/g,''))
+			.filter(x=>!!x.length)
+			.join('')
+			.split(',')
+			.map(x=>x.replace(/\.token/g,''))
+			.map(x=>x.match(/language-/)?'.'+x.match(/language-([^\.]+)/)[1]:x)
+			.map(x=>x.match(/(style|script)\./)?'.'+x.match(/(style|script)/)[1]:x)
+			.map(x=>x.replace(/\./g,''))
+			.forEach(type=>obj[type]=rules.color||'#fff')
 		}
 
 		return obj
-	},{background:'#000',text:'#fff'}))
+	},{background:'#000',text:'#fff'})
+
+	const textColor=ruleset.text
+	delete ruleset.text
+	ruleset.text=textColor
+
+	config.themes.pane=ruleset
+
 
 }
