@@ -14,6 +14,8 @@ config.state=
 config.themes={}
 config.themes.pane=
 {
+	background:'#222',
+
 	comment:'#0c0',
 	//html
 	//@todo make parent tokens overwrite default text color (e.g. comment text should be green)

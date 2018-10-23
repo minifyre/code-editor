@@ -23,7 +23,7 @@ util.prismTheme2json=function(name='Dark')
 	if(!styles[0].length||styles[0][0].type!=='selector') styles.splice(0,1)
 
 	//extract rules
-	console.log(styles.map(function([selector,_,...tokens])
+	const relevantRules=styles.map(function([selector,_,...tokens])
 	{
 		const closingBrace=tokens.reverse().findIndex(({content})=>content==='}')
 		tokens=tokens.slice(closingBrace+1).reverse()
@@ -54,12 +54,34 @@ util.prismTheme2json=function(name='Dark')
 
 		const relevantRules=
 				Object.entries(rules)
-				.filter(([prop])=>prop.match(/background|color/))
+				.filter(([prop])=>prop.match(/background|color|opacity/))
 				.filter(([prop,val])=>!(''+val).match(/none/))
 				.reduce((obj,[prop,val])=>Object.assign(obj,{[prop]:val}),{})
 		
 		return [selector,relevantRules]
 	})
-	.filter(([_,rules])=>!!Object.keys(rules).length))
+	.filter(([_,rules])=>!!Object.keys(rules).length)
+
+	const editor=/code|pre/
+
+	console.log(relevantRules.reduce(function(obj,[selector,rules])
+	{
+		if(!selector.content?selector.match(editor):
+			selector.content.some(x=>(x.content||x).match(editor)))
+		{
+			Object.entries(rules)
+			.forEach(function([prop,val])
+			{
+				if(prop.match(/background/)) obj.background=val
+				else if(prop.match(/color/)) obj.text=val
+			})
+		}
+		else
+		{
+			;(selector.content||[selector])
+		}
+
+		return obj
+	},{background:'#000',text:'#fff'}))
 
 }
