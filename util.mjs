@@ -52,7 +52,14 @@ util.prismTheme2json=function(name='Dark')
 			lastLength=tokens.length
 		}
 
-		return [selector,rules]
-	}))
+		const relevantRules=
+				Object.entries(rules)
+				.filter(([prop])=>prop.match(/background|color/))
+				.filter(([prop,val])=>!(''+val).match(/none/))
+				.reduce((obj,[prop,val])=>Object.assign(obj,{[prop]:val}),{})
+		
+		return [selector,relevantRules]
+	})
+	.filter(([_,rules])=>!!Object.keys(rules).length))
 
 }
