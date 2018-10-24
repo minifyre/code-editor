@@ -71,7 +71,7 @@ output.loadableDropdown=function(name,props,from,selectedVal,items)
 		})
 	)
 }
-output.renderCode=function(editor)
+output.renderCode=function(editor)//@todo cleanup
 {
 	//@todo recalc cursor position in case another view changed the value?
 	const

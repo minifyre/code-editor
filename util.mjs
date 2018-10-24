@@ -4,8 +4,21 @@ const {config,util}=silo
 
 import prism from './node_modules/prism-plus/index.js'
 util.prism=prism
+//@todo integrate 
+// Prism.hooks.add('before-highlight', function(env) {
+// 	var tokens = env.grammar;
 
-util.prismTheme2json=function(name='Dark')
+// 	if (!tokens) return;
+
+// 	tokens.tab = /\t/g;
+// 	tokens.crlf = /\r\n/g;
+// 	tokens.lf = /\n/g;
+// 	tokens.cr = /\r/g;
+// 	tokens.space = / /g;
+// });
+// })();
+
+util.prismTheme2json=function(name='Dark')//@todo cleanup
 {
 	const
 	theme=util.prism.themes[name],//@todo kill off util.upercase Prism variant
