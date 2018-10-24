@@ -6,7 +6,7 @@ function output(editor)
 {
 	const
 	{state}=editor,
-	{cursor,lang}=state.view,
+	{cursor,lang,theme}=state.view,
 	{file}=state,
 	{modified}=file,
 
@@ -27,6 +27,18 @@ function output(editor)
 		v('footer',{},
 			//@todo cursor is not updating fast enough (1 char behind...)
 			v('.cursor-info',{},cursor),//@todo convert to 2 input[type=number] fields
+			v('select.theme',{},
+				...Object.keys(config.themes)
+				.map(function(value)
+				{
+					const
+					loaded=config.themes[value],
+					selected=value===theme?{selected:true}:{},
+					props=Object.assign({data:{loaded},value},selected)
+
+					return v('option',props,(loaded?'':'*')+value)
+				})
+			),
 			v('select.langs',{on:{change:evt=>silo.input.lang(evt,editor)}},
 				...Object.entries(util.Prism.languages)
 				.filter(([key,val])=>typeof val!=='function')
