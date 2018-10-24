@@ -36,7 +36,6 @@ util.prismTheme2json=function(name='Dark')
 			tokens.splice(0,tokens.findIndex(({type})=>type==='property'))
 
 			const property=tokens.splice(0,1)[0]
-
 			
 			tokens.splice(0,tokens.findIndex(({content})=>content===':')+1)
 
@@ -94,11 +93,7 @@ util.prismTheme2json=function(name='Dark')
 		return obj
 	},{background:'#000',text:'#fff'})
 
-	const textColor=ruleset.text
-	delete ruleset.text
-	ruleset.text=textColor
+	ruleset['html.tag']=ruleset.tag||'#000'
 
-	config.themes.pane=ruleset
-
-
+	return ruleset
 }
