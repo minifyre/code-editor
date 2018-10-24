@@ -8,12 +8,15 @@ config.state=
 	{
 		cursor:'0,0',
 		lang:'html',
+		theme:'pane',
 		type:'code-editor'
 	}
 }
 config.themes={}
 config.themes.pane=
 {
+	background:'#222',
+
 	comment:'#0c0',
 	//html
 	//@todo make parent tokens overwrite default text color (e.g. comment text should be green)

@@ -4,10 +4,9 @@ const
 {truth,v}=util
 export default async function code(url='/node_modules/code-editor/')
 {
-	//@todo use es6 module loading for Prism.js
-	const {err}=await util.loadScript(url+'node_modules/prism/prism.js')
-	if (err) return console.error(err)
-	util.Prism=Prism
+	await util.prism.load()
+
+	Object.assign(config.themes,util.prism.themes)
 
 	await util.mkCustomEl(url,'code-editor',code.editor)
 }

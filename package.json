@@ -6,7 +6,7 @@
 	"version": "0.5.0",
 	"dependencies": {
 		"pane-viewer":"minifyre/pane-viewer",
-        "prismJS":"PrismJS/prism"
+        "prismJS":"minifyre/prism-plus"
 	},
 	"devDependencies": {
 		"cherub": "minifyre/cherub"

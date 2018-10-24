@@ -6,7 +6,7 @@ function output(editor)
 {
 	const
 	{state}=editor,
-	{cursor,lang}=state.view,
+	{cursor,lang,theme}=state.view,
 	{file}=state,
 	{modified}=file,
 
@@ -18,7 +18,7 @@ function output(editor)
 	'input,keydown,keyup,pointerdown,pointermove,pointerout,pointerup,scroll'
 	.split(',')
 	.forEach(fn=>on[fn]=evt=>silo.input[fn](editor,evt))
-	//@todo fix lang switcher
+
 	return [v('style',{},silo.config.css),
 		v('main',{},
 			v('canvas',{data:{modified},on:{render:()=>output.renderCode(editor)}}),
@@ -27,16 +27,13 @@ function output(editor)
 		v('footer',{},
 			//@todo cursor is not updating fast enough (1 char behind...)
 			v('.cursor-info',{},cursor),//@todo convert to 2 input[type=number] fields
-			v('select.langs',{on:{change:evt=>silo.input.lang(evt,editor)}},
-				...Object.entries(silo.util.Prism.languages)
+			output.loadableDropdown('theme',{on:{change:evt=>input.theme(evt,editor)}},config.themes,theme,Object.keys(config.themes)),
+			output.loadableDropdown('langs',{on:{change:evt=>input.lang(evt,editor)}},util.prism.languages,lang,
+				Object.entries(util.prism.languages)
 				.filter(([key,val])=>typeof val!=='function')
+				.filter(([key,val])=>!key.match(/-extras$/))
 				.map(([key])=>key)
 				.sort()
-				.map(function(opt)
-				{
-					const props=opt===lang?{selected:true}:{}
-					return v('option',props,opt)
-				})
 			)
 		)
 	]
@@ -60,7 +57,21 @@ output.langTokens=function(obj,prefix)
 		return [...arr,val,...output.langTokens(prop.inside,val)]
 	},[])
 }
-output.renderCode=function(editor)
+output.loadableDropdown=function(name,props,from,selectedVal,items)
+{
+	return v('select.'+name,props,
+		...items.map(function(value)
+		{
+			const
+			loaded=from[value],
+			selected=value===selectedVal?{selected:true}:{},
+			props=Object.assign({data:{loaded},value},selected)
+
+			return v('option',props,(loaded?'':'*')+value)
+		})
+	)
+}
+output.renderCode=function(editor)//@todo cleanup
 {
 	//@todo recalc cursor position in case another view changed the value?
 	const
@@ -70,12 +81,12 @@ output.renderCode=function(editor)
 	{height,width,x,y}=output.viewbox(el),
 	{fontSize,lineHeight,tabSize}=output.elStyles2floats(el,'fontSize','lineHeight','tabSize'),
 	font=fontSize+'px "Source Code Pro", monospace',
-	colors=config.themes.pane,
+	colors=config.themes[editor.state.view.theme],
 	//tmp resize canvas to fit text area size
 	{height:h,width:w}=el.getBoundingClientRect()
 	Object.assign(can,{height:h,width:w})
 	//end tmp
-	output.renderRect(ctx,{fillStyle:'#222'},0,0,width,height)
+	output.renderRect(ctx,{fillStyle:colors.background},0,0,width,height)
 	Object.assign(ctx,{fillStyle:'#fff',font,textBaseline:'hanging'})
 	if (!txt.length) return
 	//@todo newlines inside html tags break things
@@ -132,7 +143,7 @@ output.renderCode=function(editor)
 		if (!Array.isArray(token.content)) return [token]
 		return [...token.content.reduce((arr,x)=>arr.concat(flattenTokens(x,parentTypes)),[])]		
 	}
-	util.Prism.tokenize(txt,util.Prism.languages[lang])
+	util.prism.tokenize(txt,util.prism.languages[lang])
 	.reduce((arr,token)=>arr.concat(flattenTokens(token,['html'])),[])
 	.reduce(function(arr,token)//split newline chars
 	{
