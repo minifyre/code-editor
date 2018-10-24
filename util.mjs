@@ -8,9 +8,9 @@ util.prism=prism
 util.prismTheme2json=function(name='Dark')
 {
 	const
-	theme=util.Prism.themes[name],//@todo kill off util.upercase Prism variant
-	rules=util.Prism.languages.css,
-	tokens=util.Prism.tokenize(theme,rules)
+	theme=util.prism.themes[name],//@todo kill off util.upercase Prism variant
+	rules=util.prism.languages.css,
+	tokens=util.prism.tokenize(theme,rules)
 	.filter(({type})=>type!=='comment')//remove comments
 	.filter(token=>!(typeof token=='string'&&token.match(/^\s{1,}$/))),//remove whitespace
 	styles=tokens.reduce(function(rules,token)

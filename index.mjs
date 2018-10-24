@@ -4,9 +4,9 @@ const
 {truth,v}=util
 export default async function code(url='/node_modules/code-editor/')
 {
-	util.Prism=await util.prism.load()
+	await util.prism.load()
 
-	Object.assign(config.themes,util.Prism.themes)
+	Object.assign(config.themes,util.prism.themes)
 
 	await util.mkCustomEl(url,'code-editor',code.editor)
 }

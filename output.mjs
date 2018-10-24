@@ -28,8 +28,8 @@ function output(editor)
 			//@todo cursor is not updating fast enough (1 char behind...)
 			v('.cursor-info',{},cursor),//@todo convert to 2 input[type=number] fields
 			output.loadableDropdown('theme',{on:{change:evt=>input.theme(evt,editor)}},config.themes,theme,Object.keys(config.themes)),
-			output.loadableDropdown('langs',{on:{change:evt=>input.lang(evt,editor)}},util.Prism.languages,lang,
-				Object.entries(util.Prism.languages)
+			output.loadableDropdown('langs',{on:{change:evt=>input.lang(evt,editor)}},util.prism.languages,lang,
+				Object.entries(util.prism.languages)
 				.filter(([key,val])=>typeof val!=='function')
 				.filter(([key,val])=>!key.match(/-extras$/))
 				.map(([key])=>key)
@@ -143,7 +143,7 @@ output.renderCode=function(editor)
 		if (!Array.isArray(token.content)) return [token]
 		return [...token.content.reduce((arr,x)=>arr.concat(flattenTokens(x,parentTypes)),[])]		
 	}
-	util.Prism.tokenize(txt,util.Prism.languages[lang])
+	util.prism.tokenize(txt,util.prism.languages[lang])
 	.reduce((arr,token)=>arr.concat(flattenTokens(token,['html'])),[])
 	.reduce(function(arr,token)//split newline chars
 	{

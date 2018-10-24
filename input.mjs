@@ -27,7 +27,7 @@ input.keyup=(editor,{target})=>logic.cursor(editor.state,target)
 input.lang=async function({target},editor)
 {
 	const {value}=target
-	if(!util.Prism.languages[value]) await util.Prism.loadLanguages([value])
+	if(!util.prism.languages[value]) await util.prism.loadLanguages([value])
 	//@todo find a better way to rerender view as this doesn't alter the file
 	logic.lang(editor.state,value)
 }
@@ -41,7 +41,7 @@ input.theme=async function({target},editor)
 	const {value}=target
 	if(!config.themes[value])
 	{
-		await util.Prism.loadThemes(value)
+		await util.prism.loadThemes(value)
 		config.themes[value]=util.prismTheme2json(value)
 	}
 	//@todo move into logic
