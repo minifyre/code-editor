@@ -1,8 +1,7 @@
 import silo from './input.mjs'
+export default silo
 const
-{config,input,logic,util}=silo,
-{v}=util
-function output(editor)
+{config,util,logic,input,output}=silo(function output(editor)
 {
 	const
 	{state}=editor,
@@ -37,7 +36,9 @@ function output(editor)
 			)
 		)
 	]
-}
+}),
+{v}=util
+
 output.elStyles2floats=function(el,...props)
 {
 	const styles=getComputedStyle(el)
@@ -171,4 +172,3 @@ output.renderCode=function(editor)//@todo cleanup
 output.renderRect=(ctx,opts,x,y,w,h=w)=>Object.assign(ctx,opts).fillRect(x,y,w,h)
 output.renderTxt=(ctx,txt,x,y,opts)=>Object.assign(ctx,opts).fillText(txt,x,y)
 output.viewbox=({scrollHeight:h,scrollLeft:x,scrollTop:y,scrollWidth:w})=>({height:h,width:w,x,y})
-export default Object.assign(silo,{output})
