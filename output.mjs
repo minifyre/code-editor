@@ -6,7 +6,7 @@ function output(editor)
 {
 	const
 	{state}=editor,
-	{cursor,lang}=state.view,
+	{cursor,lang,theme}=state.view,
 	{file}=state,
 	{modified}=file,
 
@@ -27,21 +27,13 @@ function output(editor)
 		v('footer',{},
 			//@todo cursor is not updating fast enough (1 char behind...)
 			v('.cursor-info',{},cursor),//@todo convert to 2 input[type=number] fields
-			v('select.langs',{on:{change:evt=>silo.input.lang(evt,editor)}},
-				...Object.entries(util.Prism.languages)
+			output.loadableDropdown('theme',{on:{change:evt=>input.theme(evt,editor)}},config.themes,theme,Object.keys(config.themes)),
+			output.loadableDropdown('langs',{on:{change:evt=>input.lang(evt,editor)}},util.Prism.languages,lang,
+				Object.entries(util.Prism.languages)
 				.filter(([key,val])=>typeof val!=='function')
 				.filter(([key,val])=>!key.match(/-extras$/))
 				.map(([key])=>key)
 				.sort()
-				.map(function(value)
-				{
-					const
-					loaded=util.Prism.languages[value],
-					selected=value===lang?{selected:true}:{},
-					props=Object.assign({data:{loaded},value},selected)
-
-					return v('option',props,(loaded?'':'*')+value)
-				})
 			)
 		)
 	]
@@ -65,6 +57,20 @@ output.langTokens=function(obj,prefix)
 		return [...arr,val,...output.langTokens(prop.inside,val)]
 	},[])
 }
+output.loadableDropdown=function(name,props,from,selectedVal,items)
+{
+	return v('select.'+name,props,
+		...items.map(function(value)
+		{
+			const
+			loaded=from[value],
+			selected=value===selectedVal?{selected:true}:{},
+			props=Object.assign({data:{loaded},value},selected)
+
+			return v('option',props,(loaded?'':'*')+value)
+		})
+	)
+}
 output.renderCode=function(editor)
 {
 	//@todo recalc cursor position in case another view changed the value?
@@ -75,7 +81,7 @@ output.renderCode=function(editor)
 	{height,width,x,y}=output.viewbox(el),
 	{fontSize,lineHeight,tabSize}=output.elStyles2floats(el,'fontSize','lineHeight','tabSize'),
 	font=fontSize+'px "Source Code Pro", monospace',
-	colors=config.themes.pane,
+	colors=config.themes[editor.state.view.theme],
 	//tmp resize canvas to fit text area size
 	{height:h,width:w}=el.getBoundingClientRect()
 	Object.assign(can,{height:h,width:w})

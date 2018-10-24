@@ -8,6 +8,7 @@ config.state=
 	{
 		cursor:'0,0',
 		lang:'html',
+		theme:'pane',
 		type:'code-editor'
 	}
 }

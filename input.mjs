@@ -24,10 +24,23 @@ input.keydown=function(editor,evt)
 	logic.cursor(editor.state,target)
 }
 input.keyup=(editor,{target})=>logic.cursor(editor.state,target)
-input.lang=({target},editor)=>logic.lang(editor.state,target.value)
+input.lang=({target},editor)=>logic.lang(editor.state,target.value)//@todo make async & load lang in
 //@todo pointermove should only be active if pointer down was triggered first
 input.pointerdown=input.pointermove=input.pointerout=
 input.pointerup=(editor,{target})=>logic.cursor(editor.state,target)
-input.scroll=(editor,{target})=>logic.modify(editor.state)
 input.resize=({target})=>logic.modify(util.findParent(target,'code-editor').state)
+input.scroll=(editor,{target})=>logic.modify(editor.state)
+input.theme=async function({target},editor)
+{
+	const {value}=target
+	if(!config.themes[value])
+	{
+		await util.Prism.loadThemes(value)
+		config.themes[value]=util.prismTheme2json(value)
+	}
+	//@todo move into logic
+	editor.state.view.theme=value
+	//@todo find a better way to rerender view as this doesn't alter the file
+	logic.modify(editor.state)
+}
 export default silo
