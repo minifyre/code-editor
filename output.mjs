@@ -27,8 +27,8 @@ function output(editor)
 		v('footer',{},
 			//@todo cursor is not updating fast enough (1 char behind...)
 			v('.cursor-info',{},cursor),//@todo convert to 2 input[type=number] fields
-			output.loadableDropdown('theme',{},config.themes,theme,Object.keys(config.themes)),
-			output.loadableDropdown('langs',{on:{change:evt=>silo.input.lang(evt,editor)}},util.Prism.languages,lang,
+			output.loadableDropdown('theme',{on:{change:evt=>input.theme(evt,editor)}},config.themes,theme,Object.keys(config.themes)),
+			output.loadableDropdown('langs',{on:{change:evt=>input.lang(evt,editor)}},util.Prism.languages,lang,
 				Object.entries(util.Prism.languages)
 				.filter(([key,val])=>typeof val!=='function')
 				.filter(([key,val])=>!key.match(/-extras$/))
@@ -81,7 +81,7 @@ output.renderCode=function(editor)
 	{height,width,x,y}=output.viewbox(el),
 	{fontSize,lineHeight,tabSize}=output.elStyles2floats(el,'fontSize','lineHeight','tabSize'),
 	font=fontSize+'px "Source Code Pro", monospace',
-	colors=config.themes.pane,
+	colors=config.themes[editor.state.view.theme],
 	//tmp resize canvas to fit text area size
 	{height:h,width:w}=el.getBoundingClientRect()
 	Object.assign(can,{height:h,width:w})
