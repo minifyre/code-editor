@@ -1,5 +1,7 @@
 import silo from './node_modules/pane-viewer/index.mjs'
-const {config}=silo
+export default silo
+const {config}=silo()
+
 config.newline=/\r?\n|\r/g
 config.state=
 {
@@ -39,4 +41,3 @@ config.themes.pane=
 	'html.script.keyword':'#f90',
 	'html.script.string':'#f60'
 }
-export default silo

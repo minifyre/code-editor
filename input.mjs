@@ -1,5 +1,7 @@
 import silo from './logic.mjs'
-const {config,input,logic,util}=silo
+export default silo
+const {config,util,logic,input}=silo()
+
 input.alt=(e,x='')=>e.preventDefault(document.execCommand('insertHTML',false,x))
 //@todo make editor the 2nd parameter for everything
 input.input=(editor,{target})=>logic.update(editor.state,target.value)
@@ -49,4 +51,3 @@ input.theme=async function({target},editor)
 	//@todo find a better way to rerender view as this doesn't alter the file
 	logic.modify(editor.state)
 }
-export default silo
