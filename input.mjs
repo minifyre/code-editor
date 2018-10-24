@@ -24,7 +24,13 @@ input.keydown=function(editor,evt)
 	logic.cursor(editor.state,target)
 }
 input.keyup=(editor,{target})=>logic.cursor(editor.state,target)
-input.lang=({target},editor)=>logic.lang(editor.state,target.value)//@todo make async & load lang in
+input.lang=async function({target},editor)
+{
+	const {value}=target
+	if(!util.Prism.languages[value]) await util.Prism.loadLanguages([value])
+	//@todo find a better way to rerender view as this doesn't alter the file
+	logic.lang(editor.state,value)
+}
 //@todo pointermove should only be active if pointer down was triggered first
 input.pointerdown=input.pointermove=input.pointerout=
 input.pointerup=(editor,{target})=>logic.cursor(editor.state,target)
