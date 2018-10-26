@@ -48,7 +48,6 @@ textarea
 	opacity:0.5;
 	overflow:scroll;
 	resize:none;
-	tab-size:4;
 	-webkit-text-fill-color:transparent;/*does not affect cursor color*/
 	white-space:pre;
 }

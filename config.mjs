@@ -10,6 +10,7 @@ config.state=
 	{
 		cursor:'0,0',
 		lang:'html',
+		tabSize:4,
 		theme:'pane',
 		type:'code-editor'
 	}

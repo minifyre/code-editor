@@ -5,7 +5,7 @@ const
 {
 	const
 	{state}=editor,
-	{cursor,lang,theme}=state.view,
+	{cursor,lang,tabSize,theme}=state.view,
 	{file}=state,
 	{modified}=file,
 
@@ -21,7 +21,7 @@ const
 	return [v('style',{},silo.config.css),
 		v('main',{},
 			v('canvas',{data:{modified},on:{render:()=>output.renderCode(editor)}}),
-			v('textarea',{lang,on,spellcheck:false},file.value)
+			v('textarea',{lang,on,spellcheck:false,style:`tab-size:${tabSize};`},file.value)
 		),
 		v('footer',{},
 			//@todo cursor is not updating fast enough (1 char behind...)
