@@ -8,9 +8,8 @@ logic.cursor=function(state,el)
 	const
 	length=el.selectionEnd-el.selectionStart,
 	row=logic.prevLines(el).length,
-	tabs=logic.tabReplacement(el),
-	col=logic.currentLine(el).replace(/\t/g,tabs).length+1
-	
+	col=util.tabs2spaces(logic.currentLine(el),state.view.tabSize).length+1
+
 	state.view.cursor=[col,row,length].filter(x=>!!x).join(',')
 }
 logic.lang=function(state,value)
@@ -29,4 +28,3 @@ logic.findReplace=(txt,[find,swap])=>txt.replace(new RegExp(find,'g'),swap)
 logic.indentation=ln=>(ln.match(/^\s*/g)||[''])[0]
 logic.int2lineNum=(int,lpad=4,txt=''+int)=>' '.repeat(lpad-txt.length)+txt+' '
 logic.prevLines=({selectionStart:i,value})=>value.slice(0,i).split(config.newline)
-logic.tabReplacement=el=>Array(parseInt(getComputedStyle(el).tabSize)).fill(' ').join('')

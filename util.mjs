@@ -18,6 +18,8 @@ util.prism=prism
 // });
 // })();
 
+util.tabs2spaces=(txt,width=4)=>txt.replace(/\t/g,' '.repeat(width))
+
 util.prismTheme2json=function(name='Dark')//@todo cleanup
 {
 	const
