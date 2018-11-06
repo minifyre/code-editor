@@ -83,14 +83,17 @@ output.renderCode=function(editor)//@todo cleanup
 	{fontSize,lineHeight,tabSize}=output.elStyles2floats(el,'fontSize','lineHeight','tabSize'),
 	font=fontSize+'px "Source Code Pro", monospace',
 	colors=config.themes[editor.state.view.theme],
-	//tmp resize canvas to fit text area size
+	//tmp resize canvas to fit textarea size
 	{height:h,width:w}=el.getBoundingClientRect()
 	Object.assign(can,{height:h,width:w})
 	//end tmp
 	output.renderRect(ctx,{fillStyle:colors.background},0,0,width,height)
 	Object.assign(ctx,{fillStyle:'#fff',font,textBaseline:'hanging'})
 	if (!txt.length) return
-	//@todo newlines inside html tags break things
+
+
+	//@todo tabs after text may break things as they take up as much space as 
+	//exists between their starting position and the next multiple of their length 
 	const
 	pos={x:0,y:0},
 	tab=Array(tabSize).fill(' ').join(''),
@@ -127,25 +130,27 @@ output.renderCode=function(editor)//@todo cleanup
 		//@todo readd tabs queueTxt(type.match(/tab/)?opts.tab:start,{fillStyle},{lineHeight,pos})
 		if (token.type.match(/newline/)) newLine(pos)
 	},
-	str2token=function(content)
-	{
-		const
-		{length}=content,
-		type=	content.match(config.newline)?'newline':
-				content.match(/\t/)?'tab':
-				'text'
-		return {content,length,type}
-	},
 	flattenTokens=function(token,parentTypes=[])
 	{
-		if (typeof token==='string') token=str2token(token)
+		if (typeof token==='string') token=logic.str2token(token)
 		parentTypes=parentTypes.concat([token.type])
 		token.type=parentTypes.filter(x=>x.length).filter((x,i,arr)=>arr.indexOf(x)===i).join('.')
 		if (!Array.isArray(token.content)) return [token]
 		return [...token.content.reduce((arr,x)=>arr.concat(flattenTokens(x,parentTypes)),[])]		
 	}
+	// showInvisibles=function(token)
+	// {
+	// 	console.log(token)
+	// 	// tokens.tab=/\t/g
+	// 	// tokens.crlf=/\r\n/g
+	// 	// tokens.lf=/\n/g
+	// 	// tokens.cr=/\r/g
+	// 	// tokens.space=/ /g
+	// 	return token
+	// }
+
 	util.prism.tokenize(txt,util.prism.languages[lang])
-	.reduce((arr,token)=>arr.concat(flattenTokens(token,['html'])),[])
+	.reduce((arr,token)=>arr.concat(flattenTokens(token,[lang])),[])
 	.reduce(function(arr,token)//split newline chars
 	{
 		if (token.type.match('newline')&&token.length>1)
@@ -156,7 +161,7 @@ output.renderCode=function(editor)//@todo cleanup
 				...token
 				.content
 				.split('')
-				.map(str2token)
+				.map(logic.str2token)
 				.map(x=>Object.assign(x,{type:types+'.'+x.type}))
 			]
 		}

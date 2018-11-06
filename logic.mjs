@@ -28,3 +28,15 @@ logic.findReplace=(txt,[find,swap])=>txt.replace(new RegExp(find,'g'),swap)
 logic.indentation=ln=>(ln.match(/^\s*/g)||[''])[0]
 logic.int2lineNum=(int,lpad=4,txt=''+int)=>' '.repeat(lpad-txt.length)+txt+' '
 logic.prevLines=({selectionStart:i,value})=>value.slice(0,i).split(config.newline)
+
+
+//non-state fns
+logic.str2token=function(content)
+{
+	const
+	{length}=content,
+	type=	content.match(config.newline)?'newline':
+			content.match(/\t/)?'tab':
+			'text'
+	return {content,length,type}
+}
