@@ -129,14 +129,6 @@ output.renderCode=function(editor)//@todo cleanup
 		queueTxt(content,{fillStyle},{lineHeight,pos})
 		//@todo readd tabs queueTxt(type.match(/tab/)?opts.tab:start,{fillStyle},{lineHeight,pos})
 		if (token.type.match(/newline/)) newLine(pos)
-	},
-	flattenTokens=function(token,parentTypes=[])
-	{
-		if (typeof token==='string') token=logic.str2token(token)
-		parentTypes=parentTypes.concat([token.type])
-		token.type=parentTypes.filter(x=>x.length).filter((x,i,arr)=>arr.indexOf(x)===i).join('.')
-		if (!Array.isArray(token.content)) return [token]
-		return [...token.content.reduce((arr,x)=>arr.concat(flattenTokens(x,parentTypes)),[])]		
 	}
 	// showInvisibles=function(token)
 	// {
@@ -150,7 +142,7 @@ output.renderCode=function(editor)//@todo cleanup
 	// }
 
 	util.prism.tokenize(txt,util.prism.languages[lang])
-	.reduce((arr,token)=>arr.concat(flattenTokens(token,[lang])),[])
+	.reduce((arr,token)=>arr.concat(logic.flattenTokens(token,[lang])),[])
 	.reduce(function(arr,token)//split newline chars
 	{
 		if (token.type.match('newline')&&token.length>1)

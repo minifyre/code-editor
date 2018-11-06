@@ -31,6 +31,14 @@ logic.prevLines=({selectionStart:i,value})=>value.slice(0,i).split(config.newlin
 
 
 //non-state fns
+logic.flattenTokens=function(token,parentTypes=[])
+{
+	if (typeof token==='string') token=logic.str2token(token)
+	parentTypes=parentTypes.concat([token.type])
+	token.type=parentTypes.filter(x=>x.length).filter((x,i,arr)=>arr.indexOf(x)===i).join('.')
+	if (!Array.isArray(token.content)) return [token]
+	return [...token.content.reduce((arr,x)=>arr.concat(logic.flattenTokens(x,parentTypes)),[])]		
+}
 logic.str2token=function(content)
 {
 	const
