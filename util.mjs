@@ -18,6 +18,11 @@ util.prism=prism
 // });
 // })();
 
+//functional code
+const curry=(fn,...xs)=>(...ys)=>fn(...xs,...ys)
+Object.assign(util,{curry})
+
+
 util.tabs2spaces=(txt,width=4)=>txt.replace(/\t/g,' '.repeat(width))
 
 util.prismTheme2json=function(name='Dark')//@todo cleanup
