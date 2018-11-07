@@ -27,8 +27,8 @@ const
 			//@todo cursor is not updating fast enough (1 char behind...)
 			v('.cursor-info',{},cursor),//@todo convert to 2 input[type=number] fields
 			output.loadableDropdown('theme',{on:{change:evt=>input.theme(evt,editor)}},config.themes,theme,Object.keys(config.themes)),
-			output.loadableDropdown('langs',{on:{change:evt=>input.lang(evt,editor)}},util.prism.languages,lang,
-				Object.entries(util.prism.languages)
+			output.loadableDropdown('langs',{on:{change:evt=>input.lang(evt,editor)}},prism.languages,lang,
+				Object.entries(prism.languages)
 				.filter(([key,val])=>typeof val!=='function')
 				.filter(([key,val])=>!key.match(/-extras$/))
 				.map(([key])=>key)
@@ -37,7 +37,7 @@ const
 		)
 	]
 }),
-{v}=util
+{curry,prism,v}=util
 
 output.elStyles2floats=function(el,...props)
 {
@@ -89,46 +89,35 @@ output.renderCode=function(editor)//@todo cleanup
 	//end tmp
 	output.renderRect(ctx,{fillStyle:colors.background},0,0,width,height)
 	Object.assign(ctx,{fillStyle:'#fff',font,textBaseline:'hanging'})
-	if (!txt.length) return
+	if(!txt.length) return
 
-
-	//@todo tabs after text may break things as they take up as much space as 
-	//exists between their starting position and the next multiple of their length 
-	const
-	pos={x:0,y:0},
-	tab=Array(tabSize).fill(' ').join(''),
-	queue=[],
-	queueTxt=function(txt,opts,config)
+	logic.queueTxt=function(queue,txt,opts,config)//@todo add ctx to params
 	{
 		const
 		x=pos.x,
 		y=config.pos.y*config.lineHeight
 		queue.push({txt,x,y,opts})
 		config.pos.x+=ctx.measureText(txt.replace(/\t/g,tab)).width
-	},
-	newLine=function(pos)
-	{
-		pos.x=0
-		pos.y+=1
-		// @todo find a way to fix the horizontal distortion this causes
-		// if (!lineNums) return
-		// queueTxt(logic.int2lineNum(pos.y+1),{fillStyle:'#999'},{lineHeight,pos})
-		// pos.x=Math.ceil(pos.x)
-		// queueTxt(logic.int2lineNum(1),{fillStyle:'#999'},{lineHeight,pos})
-		// //line number padding
-		// textarea.style.paddingLeft=Math.ceil(ctx.measureText('   1 ').width)+'px'
-	},
-	token2queue=function(token,opts)
+	}
+
+	//@todo tabs after text may break things as they take up as much space as 
+	//exists between their starting position and the next multiple of their length 
+	const
+	pos={x:0,y:0},
+	tab=Array(tabSize).fill(' ').join(''),
+	newLine=pos=>Object.assign(pos,{x:0,y:pos.y+1}),
+	token2queue=function(tokens,{colors,lineHeight,pos},token)
 	{
 		const
-		{colors,lineHeight,pos}=opts,
 		{content,type}=token,
 		key=Object.keys(colors)
 		.reduce((old,key)=>type.match(key)&&key.length>old.length?key:old,''),
 		fillStyle=colors[key||'text']||'#fff'
-		queueTxt(content,{fillStyle},{lineHeight,pos})
-		//@todo readd tabs queueTxt(type.match(/tab/)?opts.tab:start,{fillStyle},{lineHeight,pos})
-		if (token.type.match(/newline/)) newLine(pos)
+
+		logic.queueTxt(tokens,content,{fillStyle},{lineHeight,pos})
+		if(token.type.match(/newline/)) newLine(pos)
+
+		return tokens
 	}
 	// showInvisibles=function(token)
 	// {
@@ -141,29 +130,30 @@ output.renderCode=function(editor)//@todo cleanup
 	// 	return token
 	// }
 
-	util.prism.tokenize(txt,util.prism.languages[lang])
-	.reduce((arr,token)=>arr.concat(logic.flattenTokens(token,[lang])),[])
-	.reduce(function(arr,token)//split newline chars
-	{
-		if (token.type.match('newline')&&token.length>1)
-		{
-			const types=token.type.split('.').slice(0,-1)
-			return [
-				...arr,
-				...token
-				.content
-				.split('')
-				.map(logic.str2token)
-				.map(x=>Object.assign(x,{type:types+'.'+x.type}))
-			]
-		}
-		return [...arr,token]
-	},[])
-	.forEach(token=>token2queue(token,{colors,lineHeight,pos,tab}))
 	ctx.save()
 	//@todo if txt y (or x) is not within the bounds, don't draw it (need to integrate further down)
 	ctx.translate(-x,Math.ceil(lineHeight/10)-y)//@todo figure out how to make this work with scaling...
-	queue.forEach(({txt,x,y,opts})=>output.renderTxt(ctx,txt,x,y,opts))
+
+	prism.tokenize(txt,prism.languages[lang])
+	.reduce((arr,token)=>arr.concat(logic.flattenTokens(token,[lang])),[])
+	.reduce(function(arr,token)//split newline chars
+	{
+		const types=token.type.split('.').slice(0,-1)
+		return arr.concat
+		(
+			token.type.match('newline')&&token.length>1?
+			token
+			.content
+			.split('')
+			.map(logic.str2token)
+			.map(x=>Object.assign(x,{type:types+'.'+x.type})):
+			[token]
+		)
+	},[])
+	//@todo use reduce to add invisibles
+	.reduce((tokens,token)=>token2queue(tokens,{colors,lineHeight,pos,tab},token),[])
+	.forEach(({txt,x,y,opts})=>output.renderTxt(ctx,txt,x,y,opts))
+
 	ctx.restore()
 }
 output.renderRect=(ctx,opts,x,y,w,h=w)=>Object.assign(ctx,opts).fillRect(x,y,w,h)
