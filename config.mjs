@@ -2,7 +2,15 @@ import silo from './node_modules/pane-viewer/index.mjs'
 export default silo
 const {config}=silo()
 
-config.newline=/\r?\n|\r/g
+config.whitespace=
+{
+	tab:/\t/g,
+	crlf:/\r\n/g,
+	lf:/\n/g,
+	cr:/\r/g
+}
+config.newline=/\r?\n|\r/g//@todo eliminate
+
 config.state=
 {
 	file:{value:''},

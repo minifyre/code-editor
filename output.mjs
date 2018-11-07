@@ -115,20 +115,12 @@ output.renderCode=function(editor)//@todo cleanup
 		fillStyle=colors[key||'text']||'#fff'
 
 		logic.queueTxt(tokens,content,{fillStyle},{lineHeight,pos})
-		if(token.type.match(/newline/)) newLine(pos)
+		if(token.type.match(/(clrf|cr|lf)$/)) newLine(pos)
 
 		return tokens
 	}
-	// showInvisibles=function(token)
-	// {
-	// 	console.log(token)
-	// 	// tokens.tab=/\t/g
-	// 	// tokens.crlf=/\r\n/g
-	// 	// tokens.lf=/\n/g
-	// 	// tokens.cr=/\r/g
-	// 	// tokens.space=/ /g
-	// 	return token
-	// }
+
+
 
 	ctx.save()
 	//@todo if txt y (or x) is not within the bounds, don't draw it (need to integrate further down)
@@ -138,19 +130,29 @@ output.renderCode=function(editor)//@todo cleanup
 	.reduce((arr,token)=>arr.concat(logic.flattenTokens(token,[lang])),[])
 	.reduce(function(arr,token)//split newline chars
 	{
-		const types=token.type.split('.').slice(0,-1)
-		return arr.concat
-		(
-			token.type.match('newline')&&token.length>1?
-			token
-			.content
-			.split('')
-			.map(logic.str2token)
-			.map(x=>Object.assign(x,{type:types+'.'+x.type})):
-			[token]
+		const types=token.type
+		return arr.concat(!token.content.match(/\t|\n|\r/)?[token]:
+			Object.entries(config.whitespace)
+			.reduce(function(tokens,[type,pattern])//add tabs & newlines
+			{
+				const rtn=[]
+				tokens
+				.forEach(function(token)
+				{
+					if(typeof token!=='string'||!token.match(pattern)) return rtn.push(token)
+					const
+					matches=token.match(pattern)
+					.map(content=>({content,length:content.length,type:types+'.'+type})),
+					tmp=token.split(pattern)
+					.reduce((arr,nonMatch,i)=>arr.concat(nonMatch,matches[i]),[])
+					tmp.pop()//remove empty last element
+					rtn.push(...tmp.filter(x=>x.length))
+				})
+				return rtn
+			},[token.content])
+			.map(x=>typeof x==='string'?{content:x,length:x.length,type:types}:x)
 		)
 	},[])
-	//@todo use reduce to add invisibles
 	.reduce((tokens,token)=>token2queue(tokens,{colors,lineHeight,pos,tab},token),[])
 	.forEach(({txt,x,y,opts})=>output.renderTxt(ctx,txt,x,y,opts))
 

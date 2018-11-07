@@ -43,8 +43,8 @@ logic.str2token=function(content)
 {
 	const
 	{length}=content,
-	type=	content.match(config.newline)?'newline':
-			content.match(/\t/)?'tab':
+	type=	//content.match(config.newline)?'newline':
+			//content.match(/\t/)?'tab':
 			'text'
 	return {content,length,type}
 }
