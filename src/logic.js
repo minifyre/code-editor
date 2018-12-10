@@ -1,7 +1,3 @@
-import silo from './util.mjs'
-export default silo
-const {config,util,logic}=silo()
-
 logic.currentLine=el=>logic.prevLines(el).slice(-1)[0]
 logic.cursor=function(state,el)
 {

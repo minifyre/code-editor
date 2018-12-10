@@ -1,9 +1,3 @@
-import silo from './config.mjs'
-export default silo
-const {config,util}=silo()
-
-import prism from './node_modules/prism-plus/index.js'
-util.prism=prism
 //@todo integrate 
 // Prism.hooks.add('before-highlight', function(env) {
 // 	var tokens = env.grammar;
@@ -20,8 +14,6 @@ util.prism=prism
 
 //functional code
 const curry=(fn,...xs)=>(...ys)=>fn(...xs,...ys)
-Object.assign(util,{curry})
-
 
 util.tabs2spaces=(txt,width=4)=>txt.replace(/\t/g,' '.repeat(width))
 

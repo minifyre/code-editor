@@ -1,7 +1,4 @@
-import silo from './input.mjs'
-export default silo
-const
-{config,util,logic,input,output}=silo(function output(editor)
+output.render=function(editor)
 {
 	const
 	{state}=editor,
@@ -36,8 +33,7 @@ const
 			)
 		)
 	]
-}),
-{curry,prism,v}=util
+}
 
 output.elStyles2floats=function(el,...props)
 {

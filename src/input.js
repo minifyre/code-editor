@@ -1,7 +1,3 @@
-import silo from './logic.mjs'
-export default silo
-const {config,util,logic,input}=silo()
-
 input.alt=(e,x='')=>e.preventDefault(document.execCommand('insertHTML',false,x))
 //@todo make editor the 2nd parameter for everything
 input.input=(editor,{target})=>logic.update(editor.state,target.value)

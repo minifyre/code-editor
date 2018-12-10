@@ -1,7 +1,3 @@
-import silo from './node_modules/pane-viewer/index.mjs'
-export default silo
-const {config}=silo()
-
 config.whitespace=
 {
 	tab:/\t/g,
