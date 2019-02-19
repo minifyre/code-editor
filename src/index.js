@@ -12,9 +12,9 @@ export default silo(async function code(url='/node_modules/code-editor/')
 
 	Object.assign(config.themes,util.prism.themes)
 
-	await util.mkCustomEl(url,'code-editor',code.editor)
+	customElements.define('code-editor',silo.editor)
 })
-code.editor=class extends silo.customElement
+silo.editor=class extends silo.customElement
 {
 	constructor(state)
 	{
