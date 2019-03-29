@@ -15,7 +15,7 @@ output.render=function(editor)
 	.split(',')
 	.forEach(fn=>on[fn]=evt=>silo.input[fn](editor,evt))
 
-	return [v('style',{},silo.config.css),
+	return [v('style',{},silo.config.style),
 		v('main',{},
 			v('canvas',{data:{modified},on:{render:()=>output.renderCode(editor)}}),
 			v('textarea',{lang,on,spellcheck:false,style:`tab-size:${tabSize};`},file.value)
