@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+	<rect x="0" y="0" width="100" height="100" rx="25" fill="#f96" opacity="1" />
+	<defs>
+		<mask id="shadow">
+			<rect x="0" y="0" width="100" height="100" rx="25" fill="#fff" />
+			<rect x="0" y="0" width="100" height="95" rx="25" fill="#000" />
+		</mask>
+	</defs>
+	<g mask="url(#corners)">
+		<rect mask="url(#shadow)" x="0" y="75" width="100" height="25" fill="#000" opacity="0.2" />
+		<g fill="none" stroke-width="7.5" stroke="#fff">
+			<path d="m27.5,35 -15,15 15,15" />
+			<path d="m72.5,35 15,15 -15,15" />
+			<path d="m62.5,40 a15,15 0 1,0 0,20" />
+		</g>
+	</g>
+</svg>
